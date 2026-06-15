@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mèo Tiên Tri · khung chốt 🌙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--mystic:#8a5cff;--gold:#ffcf6b;--ink:#f2e8f7;--soft:#c4b4d6;
+  --head:'Baloo 2',sans-serif;--body:'Quicksand',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);color:var(--ink);min-height:100vh;padding:2.5rem 1.2rem 4rem;
+  background:radial-gradient(60vw 40vw at 12% 8%,#2a1c40,transparent 60%),radial-gradient(55vw 45vw at 88% 4%,#1a2540,transparent 58%),radial-gradient(60vw 55vw at 50% 100%,#321f4a,transparent 60%),#1c1430}
+.wrap{max-width:1000px;margin:0 auto}
+h1{font-family:var(--head);font-size:clamp(1.5rem,4vw,2.2rem);text-align:center;margin-bottom:.4rem}
+h1 span{color:var(--mystic)}
+.sub{text-align:center;color:var(--soft);max-width:640px;margin:0 auto 2.6rem;line-height:1.6}
+.row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;align-items:start}
+@media(max-width:760px){.row{grid-template-columns:repeat(2,1fr);max-width:460px;margin:0 auto}}
+.col{text-align:center}
+
+/* ===== KHUNG CHỐT: sticker bo tròn + sao ✨ + trăng khuyết 🌙 ===== */
+.frame{position:relative;display:inline-block;width:88%}
+.frame img{width:100%;display:block;border-radius:16px;border:5px solid #fff;box-shadow:0 16px 34px rgba(20,8,40,.55)}
+.frame .moon{position:absolute;top:-12px;right:-10px;font-size:1.5rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));animation:bob 3.6s ease-in-out infinite}
+.frame .star{position:absolute;bottom:42px;left:-10px;font-size:1.05rem;animation:tw 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-5px) rotate(4deg)}}
+@keyframes tw{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+.name{margin-top:.85rem;display:inline-block;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(6px);border-radius:999px;padding:.32rem .95rem;font-family:var(--head);font-weight:700;font-size:.88rem}
+.name small{color:var(--gold);font-weight:700}
+
+/* viền đổi màu theo chất (cho Ẩn Phụ) */
+.frame.w img{border-color:#ffb38a;box-shadow:0 16px 34px rgba(210,98,46,.45)}
+.frame.c img{border-color:#9ec9ff;box-shadow:0 16px 34px rgba(63,114,194,.45)}
+.frame.s img{border-color:#cfd6e6;box-shadow:0 16px 34px rgba(80,90,120,.5)}
+.frame.p img{border-color:#bfe6a6;box-shadow:0 16px 34px rgba(95,158,74,.45)}
+.note{text-align:center;color:var(--soft);font-size:.9rem;margin:2.6rem auto 0;max-width:660px;line-height:1.65}
+.tag{display:inline-block;background:var(--mystic);color:#fff;border-radius:999px;padding:.1rem .7rem;font-weight:700;font-size:.8rem;margin-bottom:1.4rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="text-align:center"><span class="tag">KHUNG CHỐT 🌙</span></div>
+  <h1>Sticker bo tròn · <span>sao ✨ + trăng khuyết 🌙</span></h1>
+  <p class="sub">Khung C bae chọn, đã thay một góc thành <b>mặt trăng khuyết</b>. Tranh RWS giữ nguyên màu thật; trăng nhẹ nhàng nhún, sao lấp lánh. Hàng dưới là viền <b>đổi màu theo chất</b> cho 56 lá Ẩn Phụ.</p>
+
+  <!-- Ẩn Chính -->
+  <div class="row" style="margin-bottom:2.6rem">
+    <div class="col">
+      <div class="frame"><span class="moon">🌙</span><span class="star">✨</span>
+        <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/The%20Star%20%28Rider-Waite%20Smith%20tarot%20deck%29.png?width=340" alt="The Star"></div>
+      <div class="name">Ngôi Sao <small>· XVII</small></div>
+    </div>
+    <div class="col">
+      <div class="frame"><span class="moon">🌙</span><span class="star">✨</span>
+        <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/The%20Moon%20%28Rider-Waite%20Smith%20tarot%20deck%29.png?width=340" alt="The Moon"></div>
+      <div class="name">Mặt Trăng <small>· XVIII</small></div>
+    </div>
+    <div class="col">
+      <div class="frame"><span class="moon">🌙</span><span class="star">✨</span>
+        <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/The%20Fool%20%28Rider-Waite%20Smith%20tarot%20deck%29.png?width=340" alt="The Fool"></div>
+      <div class="name">Chàng Khờ <small>· 0</small></div>
+    </div>
+    <div class="col">
+      <div class="frame"><span class="moon">🌙</span><span class="star">✨</span>
+        <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Death%20%28Rider-Waite%20Smith%20tarot%20deck%29.png?width=340" alt="Death"></div>
+      <div class="name">Cái Chết <small>· XIII</small></div>
+    </div>
+  </div>
+
+  <!-- Ẩn Phụ — viền theo chất -->
+  <div class="row">
+    <div class="col">
+      <div class="frame w"><span class="moon">🌙</span><span class="star">✨</span>
+        <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Ace%20of%20Wands%20%28Rider-Waite%20Smith%20tarot%20deck%29.png?width=340" alt="Ace of Wands"></div>
+      <div class="name">Át Gậy 🔥</div>
+    </div>
+    <div class="col">
+      <div class="frame c"><span class="moon">🌙</span><span class="star">✨</span>
+        <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Queen%20of%20Cups%20%28Rider-Waite%20Smith%20tarot%20deck%29.png?width=340" alt="Queen of Cups"></div>
+      <div class="name">Hoàng Hậu Cốc 💧</div>
+    </div>
+    <div class="col">
+      <div class="frame s"><span class="moon">🌙</span><span class="star">✨</span>
+        <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Three%20of%20Swords%20%28Rider-Waite%20Smith%20tarot%20deck%29.png?width=340" alt="Three of Swords"></div>
+      <div class="name">Ba Kiếm 🗡️</div>
+    </div>
+    <div class="col">
+      <div class="frame p"><span class="moon">🌙</span><span class="star">✨</span>
+        <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Ten%20of%20Pentacles%20%28Rider-Waite%20Smith%20tarot%20deck%29.png?width=340" alt="Ten of Pentacles"></div>
+      <div class="name">Mười Tiền 🪙</div>
+    </div>
+  </div>
+
+  <p class="note">🐾 Nếu bae ưng, mình áp khung này cho cả 78 lá (thay hết emoji bằng tranh RWS thật).<br>Muốn chỉnh gì nữa không — vị trí trăng/sao, độ bo góc, hay viền theo chất đậm/nhạt?</p>
+</div>
+</body>
+</html>
