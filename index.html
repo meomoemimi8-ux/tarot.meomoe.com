@@ -321,6 +321,15 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .lesson__block p{color:var(--ink-soft);line-height:1.65;font-size:.98rem}
 .lesson__meo{background:var(--surface-2);border-radius:var(--radius-sm);padding:.9rem 1rem;border:1px dashed var(--mystic-soft);display:flex;gap:.6rem;align-items:flex-start;line-height:1.6;color:var(--ink);font-size:.95rem}
 .lesson__meo .lesson__meo-cat{font-size:1.5rem;flex-shrink:0}
+.lesson__note{margin:1rem 0 .2rem}
+.lesson__note-h{font-family:var(--font-head);font-weight:700;display:flex;align-items:center;gap:.4rem;font-size:.95rem;margin-bottom:.4rem}
+.lesson__note-saved{font-family:var(--font-body);font-weight:600;font-size:.72rem;color:var(--gold);opacity:0;transition:opacity .3s;margin-left:auto}
+.lesson__note-saved.show{opacity:1}
+.lesson__note-area{width:100%;box-sizing:border-box;background:var(--surface-2);border:1px dashed var(--mystic-soft);border-radius:var(--radius-sm);padding:.7rem .85rem;font-family:var(--font-body);font-size:.95rem;color:var(--ink);line-height:1.6;resize:vertical;min-height:72px}
+.lesson__note-area:focus{outline:2px solid var(--mystic);border-style:solid}
+.lesson__note-area::placeholder{color:var(--ink-faint)}
+.tcard__note{position:absolute;top:-7px;right:-7px;width:23px;height:23px;border-radius:50%;background:var(--mystic);font-size:.7rem;display:grid;place-items:center;z-index:4;opacity:0;transform:scale(.3);transition:opacity .25s,transform .25s;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+.tcard.has-note .tcard__note{opacity:1;transform:scale(1)}
 .lesson__astro{display:flex;gap:.5rem;align-items:center;margin:.2rem 0 .9rem;font-size:.9rem;color:var(--ink-soft)}
 .lesson__astro b{color:var(--mystic)}
 .lesson__astro-ic{font-size:1.1rem}
@@ -738,6 +747,10 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
         <div class="lesson__block" id="m-sym-block"><h4>🔍 Biểu tượng trên tranh</h4><p id="m-sym"></p></div>
         <div class="lesson__block"><h4>⬇️ Nghĩa ngược</h4><p id="m-rev"></p></div>
         <div class="lesson__meo"><span class="lesson__meo-cat">🐱</span><span><b>Mèo dặn:</b> <span id="m-meo"></span></span></div>
+        <div class="lesson__note">
+          <label class="lesson__note-h" for="m-note">📝 Ghi chú của bạn <span class="lesson__note-saved" id="m-note-saved">✓ đã lưu</span></label>
+          <textarea id="m-note" class="lesson__note-area" rows="3" placeholder="Ghi lại cảm nhận, từ khoá riêng, hay điều bạn muốn nhớ về lá này… (tự lưu trên máy)"></textarea>
+        </div>
         <div id="m-links"></div>
         <div class="lesson__actions">
           <button class="btn btn--primary btn--sm" id="m-learn">📖 Đánh dấu đã học</button>
@@ -1322,8 +1335,11 @@ if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWo
 /* ===== tiến độ (lưu trên máy) ===== */
 const LEARNED = new Set(JSON.parse(localStorage.getItem('meo:tarot:learned')||'[]'));
 const MASTER  = new Set(JSON.parse(localStorage.getItem('meo:tarot:master')||'[]'));
+const NOTES   = JSON.parse(localStorage.getItem('meo:tarot:notes')||'{}');   // ghi chú cá nhân theo id lá
 const save = ()=>{ localStorage.setItem('meo:tarot:learned',JSON.stringify([...LEARNED]));
   localStorage.setItem('meo:tarot:master',JSON.stringify([...MASTER])); };
+const saveNotes = ()=> localStorage.setItem('meo:tarot:notes',JSON.stringify(NOTES));
+const hasNote = id => !!(NOTES[id] && NOTES[id].trim());
 const ROMAN=['0','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
 const byN = id => byId(id);   // alias tương thích
 function firstUnlearned(){ const c = CARDS.find(c=>!LEARNED.has(c.id)); return c?c.id:21; }
@@ -1349,10 +1365,10 @@ function tileInner(c, label){
 }
 function cardEl(c){
   const el=document.createElement('button');
-  el.className='tcard'+(c.suit?(' tcard--'+c.suit):'')+(LEARNED.has(c.id)?' is-learned':'');
+  el.className='tcard'+(c.suit?(' tcard--'+c.suit):'')+(LEARNED.has(c.id)?' is-learned':'')+(hasNote(c.id)?' has-note':'');
   el.setAttribute('aria-label', c.name);
   el.dataset.id=c.id;
-  el.innerHTML=`<span class="tcard__check">✓</span>${tileInner(c)}${c.suit?'':'<span class="tcard__hint">Học tiếp ✨</span>'}`;
+  el.innerHTML=`<span class="tcard__check">✓</span><span class="tcard__note" title="Có ghi chú">📝</span>${tileInner(c)}${c.suit?'':'<span class="tcard__hint">Học tiếp ✨</span>'}`;
   el.addEventListener('click',()=>openLesson(c.id));
   return el;
 }
@@ -1431,6 +1447,7 @@ function refreshProgress(){
     const id=coerceId(el.dataset.id);
     el.classList.toggle('is-learned',LEARNED.has(id));
     el.classList.toggle('is-next', id===nxt && majL<22);
+    el.classList.toggle('has-note', hasNote(id));
   });
   const mt=document.getElementById('minor-total');
   if(mt){ const g=MINOR.filter(c=>LEARNED.has(c.id)).length; mt.textContent=`🎴 Ẩn Phụ đã học: ${g}/56`; }
@@ -1481,6 +1498,9 @@ function openLesson(id){
   const meoBox=document.querySelector('.lesson__meo');
   if(c.meo){ meoBox.style.display=''; document.getElementById('m-meo').textContent=c.meo; }
   else meoBox.style.display='none';
+  // ghi chú cá nhân của lá này
+  document.getElementById('m-note').value = NOTES[id] || '';
+  document.getElementById('m-note-saved').classList.remove('show');
   // link sang Sổ tay theo loại lá
   const lk=[['tree','🌳 Cây Sự Sống & Hebrew'],['numer','🔢 Thần số học'],['rev','🔄 Cách đọc lá ngược']];
   if(!c.suit) lk.unshift(['jung','🧠 Nguyên mẫu Jung']);
@@ -1512,9 +1532,25 @@ document.getElementById('m-review').addEventListener('click',()=>{
   deck=[current]; deckPos=0; renderReview();
   showView('review');
 });
+// ghi chú: tự lưu khi gõ (debounce), hiện "✓ đã lưu", cập nhật badge 📝 trên lá
+const noteEl=document.getElementById('m-note'); let noteTimer;
+noteEl.addEventListener('input',()=>{
+  const v=noteEl.value;
+  if(v.trim()) NOTES[current]=v; else delete NOTES[current];
+  clearTimeout(noteTimer);
+  noteTimer=setTimeout(()=>{
+    saveNotes();
+    const s=document.getElementById('m-note-saved'); s.classList.add('show');
+    setTimeout(()=>s.classList.remove('show'),1400);
+    const tile=document.querySelector(`.tcard[data-id="${current}"]`);
+    if(tile) tile.classList.toggle('has-note',hasNote(current));
+  },400);
+});
 addEventListener('keydown',e=>{
   if(!modal.classList.contains('is-open'))return;
   if(e.key==='Escape')closeLesson();
+  // đang gõ trong ô ghi chú thì phím mũi tên để di chuyển con trỏ, không lật lá
+  if(e.target===noteEl) return;
   if(e.key==='ArrowLeft'){ const b=document.getElementById('m-prev'); if(!b.disabled)b.click(); }
   if(e.key==='ArrowRight'){ const b=document.getElementById('m-next'); if(!b.disabled)b.click(); }
 });
