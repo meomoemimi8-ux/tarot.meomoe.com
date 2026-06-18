@@ -733,7 +733,7 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
         <div class="lesson__keys" id="m-keys"></div>
         <div class="lesson__astro"><span class="lesson__astro-ic">🔭</span><span><b>Chiêm tinh:</b> <span id="m-astro"></span></span></div>
         <div class="lesson__astro"><span class="lesson__astro-ic">🌳</span><span><b>Kabbalah:</b> <span id="m-kab"></span></span></div>
-        <div class="lesson__block"><h4>🗺️ Trong hành trình</h4><p id="m-role"></p></div>
+        <div class="lesson__block"><h4 id="m-role-h">🗺️ Trong hành trình</h4><p id="m-role"></p></div>
         <div class="lesson__block"><h4>⬆️ Nghĩa xuôi</h4><p id="m-up"></p></div>
         <div class="lesson__block" id="m-sym-block"><h4>🔍 Biểu tượng trên tranh</h4><p id="m-sym"></p></div>
         <div class="lesson__block"><h4>⬇️ Nghĩa ngược</h4><p id="m-rev"></p></div>
@@ -981,14 +981,192 @@ const MINOR_TXT = {
     [['Thành đạt','Vững vàng','Hào phóng','Kỷ luật'],'Người thành đạt, vững vàng về tài chính và rộng lượng. Quản lý khôn ngoan, gặt hái bền lâu.','Tham lam, bảo thủ, đặt vật chất lên trên tất cả.'],
   ],
 };
+// lời Mèo dặn cho 56 Ẩn Phụ (key = id: chất+số) — giọng ấm áp như Ẩn Chính
+const MINOR_MEO = {
+  w1:'Một tia lửa vừa bật trong lòng bạn đó — đừng để nó tắt, thổi nhẹ cho cháy lên nào! 🔥',
+  w2:'Bạn đang cầm cả thế giới trong tay rồi — giờ chỉ cần dám bước khỏi bậu cửa thôi. 🌍',
+  w3:'Thuyền đã ra khơi rồi, đứng ngắm bình minh chút đi — thành quả đang trên đường về. ⛵',
+  w4:'Dừng lại ăn mừng một chút đi nào — bạn xứng đáng với niềm vui này mà! 🎉',
+  w5:'Va chạm tí xíu cho vui thôi, đừng coi nhau là kẻ thù — cọ xát mới sáng nha. ⚔️',
+  w6:'Ngẩng cao đầu mà nhận lời khen đi — bạn làm được thật mà, Mèo tự hào lắm! 🏆',
+  w7:'Bạn đang ở thế cao hơn mình tưởng đó — đứng vững, đừng lùi nha! 💪',
+  w8:'Mọi thứ đang bay vèo vèo — bắt lấy nhịp, đừng đứng ngẩn ra nhé! 💨',
+  w9:'Mệt rồi đúng không? Nghỉ một hơi thôi rồi đi nốt — gần tới rồi đó. 🛡️',
+  w10:'Ôm nhiều quá rồi nè — đặt bớt xuống cũng không sao đâu, Mèo phụ một tay! 🤲',
+  w11:'Cái sự tò mò háo hức này quý lắm đó — cứ giữ ánh mắt sáng rỡ ấy nhé! ✨',
+  w12:'Lao tới thì hăng thật, nhưng nhớ ngó đường tí nha kẻo vấp! 🐎',
+  w13:'Bạn toả sáng tự nhiên lắm, chẳng cần gồng — cứ ấm áp thì người ta mến thôi. 🌻',
+  w14:'Người ta đi theo không phải vì bạn la to, mà vì bạn cháy sáng. Cứ dẫn đường đi! 🔥',
+  c1:'Trái tim bạn vừa mở ra một cánh cửa — cứ để cảm xúc tràn vào, đẹp lắm đó. 💗',
+  c2:'Hai trái tim chạm nhau nhẹ nhàng — trân trọng người trước mặt mình nha. 💑',
+  c3:'Gọi hội bạn thân lại đi — niềm vui chia ra là niềm vui nhân lên đó! 🥂',
+  c4:'Có một chiếc cốc đang chìa ra cho bạn kìa — ngẩng lên xíu đi, đừng bỏ lỡ. 🫴',
+  c5:'Ba cốc đổ thì tiếc thật, nhưng quay lại xem — vẫn còn hai cốc đầy sau lưng nè. 🌧️',
+  c6:'Nhớ về ngày xưa thì ấm lòng, nhưng đừng ở lại đó hoài nha — hiện tại cũng dễ thương mà. 🌸',
+  c7:'Bảy cái cốc lấp lánh nhưng không phải cái nào cũng thật — tỉnh táo chọn một thôi nha. 🌫️',
+  c8:'Quay lưng với cái không còn nuôi dưỡng mình — đi tìm điều sâu hơn, dũng cảm lắm đó. 🌙',
+  c9:'Điều bạn mong đang thành hình — cho phép mình tận hưởng, đừng vội lo cái khác nha. 😺',
+  c10:'Cầu vồng trên mái nhà kìa — hạnh phúc đủ đầy là đây chứ đâu xa. 🌈',
+  c11:'Một con cá nhỏ vừa nhảy ra từ cốc — đó là cảm hứng bất chợt, đón lấy nhé! 🐟',
+  c12:'Chàng kỵ sĩ mang lời tỏ tình tới — cứ nghe theo trái tim, nhưng nhớ phân biệt thật–mộng nha. 💌',
+  c13:'Bạn cảm được lòng người khác giỏi lắm — nhưng nhớ rót đầy cốc của mình trước đã nha. 💞',
+  c14:'Sóng to mấy bạn vẫn ngồi vững được — làm bến đỗ cho người khác, mà đừng nuốt hết cảm xúc vào trong nha. 🌊',
+  s1:'Một ý nghĩ sắc như dao vừa loé lên — chộp lấy sự thật đó rồi quyết nha! ⚡',
+  s2:'Cứ bịt mắt mãi thì khó chọn lắm — tháo băng ra, nhìn thẳng một cái đi nào. 🙈',
+  s3:'Đau thì cứ cho mình khóc một trận đi — mưa rồi cũng tạnh, tim rồi cũng lành. 💔',
+  s4:'Ngả lưng nghỉ một chút không phải lười đâu — sạc đầy pin rồi mới đi tiếp được chứ. 😴',
+  s5:'Thắng cãi vã mà mất bạn thì có vui gì đâu — đôi khi buông là khôn nhất đó. 😼',
+  s6:'Rời vùng nước động sang bến lặng hơn — đi từ từ thôi, rồi sẽ êm. ⛵',
+  s7:'Khôn khéo thì tốt, nhưng đừng khôn lỏi với chính mình nha — thành thật cho nhẹ lòng. 🦝',
+  s8:'Nhìn kỹ xem — dây trói lỏng lắm, mắt thì tự bịt thôi. Bạn bước ra được mà! 🕊️',
+  s9:'Ban đêm nỗi lo hay phóng to gấp mười — nói ra với ai đó đi, sáng mai nhẹ liền. 🌙',
+  s10:'Chạm đáy rồi thì hết đường xuống — chỉ còn nước đi lên thôi. Bình minh kia kìa! 🌅',
+  s11:'Cái đầu lanh lợi này hay lắm — nhưng lời sắc như kiếm thì uốn lưỡi trước khi phóng nha. 🗨️',
+  s12:'Phóng như bão thì oách, nhưng nhớ phanh kịp kẻo nói trước nghĩ sau nha! 🌪️',
+  s13:'Trải đời rồi nên bạn nhìn thấu lắm — sắc sảo mà vẫn ấm thì mới quý nha. 🦋',
+  s14:'Cầm cân nảy mực thì phải lạnh cái đầu, ấm cái tâm — đừng để lý lẽ thành vô cảm nha. ⚖️',
+  p1:'Một cơ hội thật, chắc trong tay kìa — gieo xuống đất rồi chăm cho lớn nha. 🌱',
+  p2:'Tung hứng nhiều việc thì khéo lắm, nhưng đừng ôm tới mỏi tay nha — thở một nhịp. 🤹',
+  p3:'Một mình đi nhanh, cùng nhau đi xa — góp tay vào, công trình mới đẹp. 🏗️',
+  p4:'Giữ của cho chắc thì hay, nhưng nắm chặt quá thì tay đâu mà đón cái mới? 🪙',
+  p5:'Lạnh và khó thật, nhưng cửa sổ sáng ngay bên cạnh kìa — đừng ngại gõ cửa xin giúp nha. 🏮',
+  p6:'Cho đi rồi sẽ nhận lại — nhưng nhớ giữ cân thăng bằng, đừng để ai mắc nợ lòng nhau nha. ⚖️',
+  p7:'Cây đang lớn từng ngày đó — đừng nhổ lên xem rễ hoài, kiên nhẫn rồi sẽ hái quả. 🌾',
+  p8:'Mài hoài thì sắc — cứ chăm chút từng chút một, tay nghề lên lúc nào không hay đó. 🔨',
+  p9:'Trái ngọt này do chính tay bạn trồng đó — ngồi xuống tận hưởng đi, xứng đáng mà! 🍇',
+  p10:'Gây dựng được cái để lại cho người thương — đó mới là giàu bền, Mèo phục lắm! 🏛️',
+  p11:'Nâng niu đồng tiền nhỏ mà mơ chuyện lớn — đặt mục tiêu thực tế rồi bắt tay làm nha. 📿',
+  p12:'Không lao nhanh nhưng đi tới nơi về tới chốn — chậm mà chắc là siêu năng lực đó! 🐢',
+  p13:'Vừa lo cơm áo vừa ấm áp với mọi người — giỏi thật, nhưng nhớ thương mình một chút nha. 🐰',
+  p14:'Gây dựng tới đỉnh rồi vẫn vững chãi — giàu mà rộng lượng thì mới đáng nể nha. 🍇',
+};
+// biểu tượng then chốt trên tranh RWS của 56 Ẩn Phụ (Pamela Colman Smith)
+const SYM_MIN = {
+  w1:'Bàn tay từ mây trao cây gậy đang nảy lá xanh (mầm sống mới) · lâu đài trên đồi xa (mục tiêu) · sông & đồng cỏ (đất lành chờ gieo).',
+  w2:'Người đứng trên thành cao cầm quả địa cầu nhìn ra xa (tầm nhìn) · một gậy buộc vào tường, một gậy cầm tay (giữa an toàn & phiêu lưu) · hoa hồng và huệ chéo nhau (cân giữa khát khao và lý trí).',
+  w3:'Người đứng trên mỏm đồi nhìn ba con thuyền ra khơi (kế hoạch đã khởi động) · ba cây gậy cắm vững (nền tảng) · biển rộng phía trước (cơ hội mở rộng).',
+  w4:'Bốn cây gậy giăng vòng hoa như cổng mừng (cột mốc) · hai người giơ hoa reo vui (sum vầy) · lâu đài phía sau (tổ ấm an toàn).',
+  w5:'Năm chàng trai vung gậy loạn xạ (cạnh tranh hỗn loạn) · không ai bị thương thật (xung đột "giả", thi đấu) · mỗi người chĩa một hướng (bất đồng quan điểm).',
+  w6:'Kỵ sĩ cưỡi ngựa đội vòng nguyệt quế (khải hoàn) · gậy gắn vòng nguyệt quế (chiến thắng) · đám đông vây quanh tung hô (được công nhận).',
+  w7:'Người đứng trên gò cao chống lại sáu gậy chĩa lên (giữ thế thượng phong) · hai chân đi giày khác nhau (vội vàng nhưng vẫn trụ) · gương mặt quyết tâm (can đảm bảo vệ).',
+  w8:'Tám cây gậy bay song song giữa trời (chuyển động nhanh) · không bóng người (sự kiện tự diễn ra) · đồng quê & dòng sông yên (đích đến gần).',
+  w9:'Người băng bó đầu tựa vào gậy (mệt mỏi nhưng chưa gục) · tám gậy dựng sau lưng như hàng rào (kinh nghiệm phòng bị) · ánh mắt cảnh giác (sẵn sàng cho đợt cuối).',
+  w10:'Người gồng ôm cả mười cây gậy che khuất mặt (quá tải) · cúi gập người bước về phía thị trấn (gần đích) · gậy nặng trĩu tay (ôm đồm trách nhiệm).',
+  w11:'Cậu bé giữa sa mạc ngắm cây gậy nảy lá (khám phá tiềm năng) · hoa văn kỳ nhông trên áo (lửa nhiệt huyết) · tư thế hứng khởi (tin vui sắp tới).',
+  w12:'Kỵ sĩ trên con ngựa chồm lên (lao về phía trước) · giáp in hình kỳ nhông (đam mê rực) · kim tự tháp sa mạc phía sau (phiêu lưu nóng bỏng).',
+  w13:'Hoàng Hậu cầm gậy & hoa hướng dương (sức sống ấm áp) · con mèo đen dưới chân (trực giác & độc lập) · ngai khắc sư tử (tự tin, nồng nhiệt).',
+  w14:'Vua cầm gậy nảy mầm, ngai khắc sư tử & kỳ nhông (làm chủ lửa) · áo choàng hoạ tiết kỳ nhông (đam mê có kỷ luật) · ánh nhìn hướng tới (tầm nhìn lãnh đạo).',
+  c1:'Bàn tay từ mây nâng chiếc cốc tràn năm dòng nước (cảm xúc dạt dào) · chim bồ câu thả bánh thánh (ân điển/tình yêu thiêng) · hồ sen nở (tâm hồn thức tỉnh).',
+  c2:'Người nam & người nữ trao nhau chiếc cốc (kết đôi) · trượng caduceus và đầu sư tử có cánh giữa hai người (đam mê được chữa lành/cân bằng) · ánh nhìn hoà hợp.',
+  c3:'Ba cô gái nâng cốc nhảy múa (ăn mừng cùng nhau) · hoa trái dưới chân (mùa gặt/sung túc) · vòng tròn thân ái (cộng đồng nâng đỡ).',
+  c4:'Chàng trai khoanh tay dưới gốc cây (thờ ơ, khép lòng) · ba cốc trước mặt (cái đang có) · bàn tay từ mây trao cốc thứ tư (cơ hội bị phớt lờ).',
+  c5:'Người trùm áo đen cúi nhìn ba cốc đổ (đau buồn vì mất mát) · hai cốc còn đứng phía sau (cái còn lại bị quên) · cây cầu về lâu đài (lối hồi phục).',
+  c6:'Em bé trao cốc đầy hoa cho bé khác (lòng tử tế ngây thơ) · sân làng cũ (ký ức tuổi thơ) · năm cốc cắm hoa (kỷ niệm ngọt ngào).',
+  c7:'Người đứng trước bảy cốc hiện trong mây (nhiều lựa chọn) · mỗi cốc một ảo ảnh: lâu đài, châu báu, vòng nguyệt quế, rắn, rồng, bóng người trùm khăn (mộng & cám dỗ) · bóng đen do dự.',
+  c8:'Người bỏ lại tám cốc xếp ngay ngắn (rời điều đã cạn nghĩa) · bước về phía núi cao (tìm ý nghĩa) · trăng khuyết che mặt trời (giai đoạn chuyển mình).',
+  c9:'“Lá ước nguyện”: người khoanh tay mãn nguyện (toại nguyện) · chín cốc xếp vòng cung sau lưng (sung túc) · nụ cười tự hào (hài lòng với thành quả).',
+  c10:'Cặp đôi giơ tay, hai đứa trẻ nhảy múa (gia đình hoà thuận) · cầu vồng mười chiếc cốc (viên mãn trọn vẹn) · mái nhà & đồng quê (tổ ấm bền lâu).',
+  c11:'Cậu bé bên bờ biển cầm cốc có con cá ngoi lên (thông điệp từ tiềm thức) · sóng dịu phía sau (cảm xúc) · áo hoa (tâm hồn mơ mộng, sáng tạo).',
+  c12:'Kỵ sĩ cưỡi ngựa thong thả dâng chiếc cốc (lời mời từ trái tim) · mũ & giày có cánh (trí tưởng tượng bay bổng) · dòng sông & đồng xanh (cảm xúc chảy êm).',
+  c13:'Hoàng Hậu bên bờ biển ngắm chiếc cốc trang trí kín nắp (thế giới nội tâm sâu) · ngai khắc thiên thần (tình yêu thuần khiết) · sóng dưới chân (trực giác sâu thẳm).',
+  c14:'Vua ngồi trên ngai giữa biển động mà vẫn vững (làm chủ cảm xúc) · cá & thuyền quanh ngai (cảm xúc & vô thức được điều hoà) · cầm cốc & vương trượng (bao dung có chừng mực).',
+  s1:'Bàn tay từ mây nắm thanh kiếm dựng thẳng (chân lý sắc bén) · vương miện gắn vòng nguyệt quế & ô liu trên mũi kiếm (chiến thắng của trí tuệ) · núi nhọn phía dưới (thử thách của lý trí).',
+  s2:'Người phụ nữ bịt mắt ôm hai kiếm bắt chéo trước ngực (né tránh quyết định) · trăng lưỡi liềm (trực giác bị che) · mặt biển đá ngầm sau lưng (cảm xúc bị nén).',
+  s3:'Trái tim đỏ bị ba thanh kiếm xuyên qua (nỗi đau xuyên thấu) · trời xám mưa giăng (buồn bã) · không bóng người (nỗi đau trần trụi, ai cũng từng nếm).',
+  s4:'Hiệp sĩ nằm yên trên mộ như đang ngủ (nghỉ ngơi/tĩnh tâm) · ba kiếm treo trên tường, một kiếm dưới thân (tạm cất xung đột) · cửa kính màu (lời nguyện cầu bình an).',
+  s5:'Kẻ cười nhếch gom ba thanh kiếm (thắng nhờ cái tôi) · hai người thua cúi đầu bỏ đi (tổn thất cả đôi bên) · mây xé nham nhở (bầu không khí cay đắng).',
+  s6:'Người lái đò chở mẹ con sang bờ (chuyển tiếp êm) · sáu kiếm cắm trong thuyền (mang theo bài học cũ) · nước phẳng phía trước, gợn sóng phía sau (rời khổ tìm yên).',
+  s7:'Người rón rén ôm năm thanh kiếm rời trại (lén lút/mưu mẹo) · ngoái lại nhìn (chưa yên tâm) · hai kiếm bỏ lại (kế hoạch chưa trọn vẹn).',
+  s8:'Người phụ nữ bị trói, bịt mắt giữa tám thanh kiếm cắm vòng (tự giam bằng nỗi sợ) · dây buộc lỏng (xiềng xích trong đầu) · lâu đài xa trên đồi (lối thoát vẫn còn đó).',
+  s9:'Người ngồi bật dậy giữa đêm ôm mặt (lo âu, mất ngủ) · chín thanh kiếm treo trên tường tối (suy nghĩ dồn dập) · chăn thêu hoa & cung hoàng đạo (đời vẫn còn màu sắc nếu chịu nhìn).',
+  s10:'Người nằm úp với mười thanh kiếm cắm sau lưng (kết thúc tận cùng) · trời đen kịt (đáy sâu) · ánh vàng hé nơi chân trời (bình minh tái sinh chắc chắn tới).',
+  s11:'Cậu bé trên đồi vung kiếm, tóc & mây bay (trí óc lanh lẹ, cảnh giác) · đàn chim & gió mạnh (ý tưởng bay nhanh) · tư thế dò xét (ham học, hóng tin).',
+  s12:'Kỵ sĩ phi nước đại giương kiếm (lao tới quyết liệt) · cây nghiêng & mây cuộn theo gió (tốc độ, khí thế) · gương mặt căng (thẳng thừng, đôi khi hấp tấp).',
+  s13:'Hoàng Hậu ngồi trong mây, kiếm dựng thẳng, một tay chìa ra (lý trí trong sáng, đặt ranh giới) · bướm khắc trên ngai (tâm trí chuyển hoá) · gương mặt nghiêng nghiêm nghị (trung thực, độc lập).',
+  s14:'Vua ngồi thẳng nhìn trước, kiếm dựng hơi nghiêng (phán quyết công bằng) · áo xanh & bướm trên ngai (trí tuệ minh triết) · trời quang mây tạnh (tư duy sáng rõ).',
+  p1:'Bàn tay từ mây nâng một đồng tiền vàng lớn (cơ hội vật chất chắc chắn) · khu vườn hoa huệ & cổng hoa (nền tảng lành) · lối nhỏ dẫn ra núi (con đường hiện thực hoá).',
+  p2:'Chàng trai tung hai đồng tiền trong dải ruy băng hình vô cực ∞ (xoay xở linh hoạt) · hai con thuyền nhấp nhô trên sóng (thăng trầm của dòng tiền) · tư thế nhún nhảy (giữ cân bằng vui vẻ).',
+  p3:'Người thợ điêu khắc trong thánh đường (kỹ năng được trọng dụng) · hai người cầm bản vẽ bàn bạc (hợp tác) · ba đồng tiền trên vòm (thành quả chung được ghi nhận).',
+  p4:'Người ôm khư khư một đồng tiền vào ngực (bám víu) · một đồng đội trên đầu, hai đồng dưới chân (kiểm soát chặt) · thành phố sau lưng (an toàn nhưng khép kín).',
+  p5:'Hai người ăn xin (một chống nạng) lê bước trong tuyết (thiếu thốn, cô đơn) · cửa kính màu rực sáng phía trên (sự giúp đỡ ở rất gần) · không ai ngẩng nhìn (quên mất chỗ dựa).',
+  p6:'Thương nhân cầm cân, phát tiền cho hai người quỳ (cho–nhận cân bằng) · cán cân thăng bằng (công bằng) · hai bàn tay ngửa nhận (sự sẻ chia đúng lúc).',
+  p7:'Người chống cuốc ngắm bụi cây trổ bảy đồng tiền (chờ thành quả lớn dần) · dáng tư lự (đánh giá, cân nhắc) · luống đất đã vun (công sức đã đầu tư).',
+  p8:'Người thợ cặm cụi khắc từng đồng tiền (chăm chỉ, tỉ mỉ) · các đồng đã khắc treo lên như trưng bày (thành quả tích luỹ) · thành phố xa (tạm gác vui chơi để luyện nghề).',
+  p9:'Quý cô thanh lịch trong vườn nho, chim ưng đậu trên tay (tự lực & làm chủ) · chín đồng tiền quanh bụi cây (sung túc) · ốc sên dưới chân (hưởng thụ chậm rãi, an nhiên).',
+  p10:'Ông lão cùng bầy chó, gia đình & em nhỏ dưới mái vòm (di sản nhiều thế hệ) · mười đồng tiền xếp theo Cây Sự Sống (thịnh vượng trọn vẹn) · thành phố sau cổng (nền tảng bền lâu).',
+  p11:'Cậu bé giữa đồng nâng đồng tiền lên ngắm say sưa (chăm chú vào mục tiêu) · đồng cỏ & luống cày (đất lành để học hỏi) · dáng đứng vững (thực tế, chịu khó).',
+  p12:'Kỵ sĩ ngồi yên trên con ngựa cày nặng nề đứng im (bền bỉ, không vội) · cầm đồng tiền ngắm nghía (trách nhiệm) · cánh đồng đã cày sau lưng (chăm chỉ, đáng tin).',
+  p13:'Hoàng Hậu trong vườn xanh tốt ngắm đồng tiền trong lòng (chăm lo vật chất ân cần) · con thỏ bên chân (phồn thực, sung túc) · hoa lá vây quanh (ấm áp, nuôi dưỡng).',
+  p14:'Vua ngồi trên ngai phủ chùm nho & dây leo (thành đạt, sung túc) · ngai khắc đầu bò (vững vàng, bền bỉ) · cầm đồng tiền & vương trượng, lâu đài sau lưng (làm chủ vật chất, hào phóng).',
+};
+// câu chuyện/vị trí của 56 Ẩn Phụ trong "hành trình của bộ chất" (Át→10 là một mạch, 4 lá hoàng gia là 4 độ chín)
+// nguồn: A.E. Waite — Pictorial Key to the Tarot · Rachel Pollack — Seventy-Eight Degrees of Wisdom · Joan Bunning · Biddy Tarot · Labyrinthos
+const ROLE_MIN = {
+  w1:'Khởi đầu của cả câu chuyện: một bàn tay từ mây chìa ra cành gậy đâm chồi — tia lửa thuần khiết của khát khao và cảm hứng. Đây là "hạt giống" của bộ, chưa có hình hài cụ thể, chỉ là xung lực muốn tạo dựng. Mọi lá sau đều nảy ra từ năng lượng nguyên sơ này.',
+  w2:'Sau tia lửa của Át, ngọn lửa cần một hướng đi. Người lãnh chúa đứng trên thành lũy, tay cầm quả địa cầu nhìn ra vùng đất của mình: đã có thành tựu nhưng thế giới hoá nhỏ bé. Đây là khoảnh khắc lập kế hoạch, cân nhắc và dám lựa chọn bước ra xa hơn.',
+  w3:'Tiếp nối quyết định ở Hai Gậy, người ấy rời thành quách, đứng trên đồi dõi theo những con thuyền ra khơi. Kế hoạch đã thành hành động và đang lan toả ra thế giới rộng lớn. Đây là chặng của tầm nhìn xa, mở rộng và chờ thành quả từ những nỗ lực đã gieo.',
+  w4:'Sau khi gieo hành động ở Ba Gậy, đến lúc dừng lại ăn mừng. Bốn cây gậy dựng thành cổng hoa, người người vui hội dưới đó — nền móng vững và niềm hân hoan chung. Đây là điểm nghỉ hạnh phúc, sự hài hoà và mái nhà, trước khi câu chuyện bước vào thử thách.',
+  w5:'Niềm vui yên ả ở Bốn Gậy nhường chỗ cho hỗn loạn: năm thanh niên vung gậy trong cuộc ẩu đả tưởng như vô hướng. Đây là xung đột, cạnh tranh và va chạm của nhiều ý chí khác nhau — ngọn lửa lần đầu bị thử thách thật sự, buộc người trong cuộc phải khẳng định mình giữa đám đông.',
+  w6:'Vượt qua hỗn chiến của Năm Gậy, người chiến thắng cưỡi ngựa giữa đám đông tung hô, đầu đội vòng nguyệt quế. Đây là khoảnh khắc thành công và được công nhận: nỗ lực đã đơm hoa, danh tiếng đến. Nhưng vinh quang cũng mở ra trách nhiệm phải giữ vững vị thế ở chặng sau.',
+  w7:'Sau vinh quang ở Sáu Gậy, người thắng cuộc phải bảo vệ những gì mình giành được. Một người đứng trên gò cao, vung gậy chống lại sáu gậy chĩa lên từ phía dưới. Đây là chặng của kiên định, can đảm và giữ lập trường — thử thách không còn là chiến thắng mà là duy trì điều đã đạt.',
+  w8:'Sau thế thủ căng thẳng ở Bảy Gậy, năng lượng bỗng bứt ra: tám cây gậy bay vút qua bầu trời quang đãng, "như những mũi tên của tình yêu" sắp chạm đích. Đây là chặng của chuyển động nhanh, tin tức và hành động dồn dập — mọi thứ tăng tốc và đang tiến thẳng tới kết quả.',
+  w9:'Sau cơn tăng tốc của Tám Gậy, đến chặng thấm mệt: người đàn ông quấn băng tựa vào gậy, tám gậy khác dựng thành rào sau lưng. Anh mang đầy thương tích từ những trận đã qua nhưng vẫn cảnh giác, sẵn sàng cho thử thách cuối. Đây là sự bền bỉ, can trường và niềm tin được tôi luyện.',
+  w10:'Khép lại hành trình mười lá: một người gò lưng ôm cả mười cây gậy che kín tầm nhìn, lê bước về phía thị trấn. Mọi nỗ lực đã thành hình nhưng hoá thành gánh nặng. Đây là chặng hoàn tất kèm bài học buông bớt — ngọn lửa sáng tạo cần biết khi nào dừng để một chu kỳ mới được bắt đầu.',
+  w11:'Lá hoàng gia đầu tiên — "đứa con út" của Lửa: một sứ giả trẻ đứng ngắm cây gậy đâm chồi đầy tò mò. Hầu Gậy là tinh thần nguyên sơ của Át tái sinh trong một con người: háo hức, dám mơ, mang tin lành và khám phá. Đây là giai đoạn ngọn lửa còn non, tươi mới và đầy tiềm năng học hỏi.',
+  w12:'Sau sự háo hức của Hầu, Kỵ Sĩ là ngọn lửa lao vào hành động: chàng cưỡi ngựa chồm lên, áo giáp điểm hình kỳ nhông. Đây là độ tuổi của nhiệt huyết bốc đồng, phiêu lưu và tự tin xông pha — năng lượng Lửa ở dạng năng động nhất, dám lên đường nhưng đôi khi thiếu kiên nhẫn.',
+  w13:'Hoàng Hậu là ngọn lửa đã chín thành sức ấm bên trong: người phụ nữ uy nghi ngồi với hoa hướng dương và chú mèo đen, tay cầm gậy. Bà nồng hậu, lôi cuốn, can đảm và đầy nội lực — biết truyền cảm hứng và giữ ngọn lửa cháy bền. Đây là sự trưởng thành của Lửa hướng vào bản lĩnh và sức hút cá nhân.',
+  w14:'Lá cuối cùng, đỉnh cao của bộ: vị Vua ngồi trên ngai khắc hình sư tử và kỳ nhông, tay nắm chắc cây gậy. Ông là người lãnh đạo có tầm nhìn, lôi cuốn và quả quyết — ngọn lửa đã được làm chủ trọn vẹn để dẫn dắt người khác. Hành trình từ tia lửa Át khép lại nơi ý chí trưởng thành thành quyền uy sáng tạo.',
+  c1:'Mở đầu cả hành trình: chiếc chén thiêng tràn nước từ tay trời, là cảm xúc tinh khôi vừa chớm — tình yêu, lòng trắc ẩn, trực giác mới sinh. Đây là "hạt giống" của cả bộ, nguồn nước mà mọi lá sau sẽ rót đầy, làm vơi, hay đi tìm lại. Trái tim vừa mở ra, sẵn sàng cho mọi điều sắp đến.',
+  c2:'Sau dòng cảm xúc một mình ở Át Cốc, trái tim hướng ra ngoài tìm một người. Hai người nâng chén trao nhau, kết nối ngang hàng và tôn trọng — tình yêu, tình bạn, sự đồng điệu của hai tâm hồn. Đây là khoảnh khắc cái "tôi" cảm xúc trở thành cái "chúng ta" đầu tiên.',
+  c3:'Từ đôi lứa ở Hai Cốc, niềm vui lan rộng thành cộng đồng. Ba người bạn nâng chén mừng nhau trong điệu múa hân hoan — tình thân, sẻ chia, ăn mừng những thành quả. Đây là đỉnh vui giòn giã đầu tiên của bộ, khi cảm xúc tốt lành được nhân lên nhờ có người cùng hưởng.',
+  c4:'Sau ba lá hân hoan, tâm hồn chững lại và quay vào trong. Người ngồi khoanh tay, hờ hững với ba chiếc chén trước mặt, không thấy chiếc chén thứ tư trời trao bên cạnh. Đây là chặng chán chường, thờ ơ — cái giá của việc đắm vào nội tâm đến mức bỏ lỡ cơ hội mới đang chìa ra.',
+  c5:'Từ sự hờ hững ở Bốn Cốc, nỗi đau thật sự ập đến. Bóng người choàng áo đen cúi nhìn ba chén đổ, mà chưa quay lại thấy hai chén còn nguyên phía sau. Đây là chặng mất mát, tiếc nuối, tang thương — nhưng cũng ngầm dạy rằng không phải tất cả đã mất, chỉ là ta chưa nỡ ngoảnh lại.',
+  c6:'Sau vực sâu của Năm Cốc, trái tim tìm về chốn an lành. Một đứa trẻ trao chén hoa cho đứa nhỏ hơn trong khung cảnh êm đềm — ký ức tuổi thơ, sự ngây thơ, lòng tử tế và chữa lành. Đây là chặng nghỉ ngơi ngọt ngào, khi quá khứ đẹp xoa dịu vết thương vừa qua.',
+  c7:'Được chữa lành rồi, tâm trí lại mơ mộng và phân vân. Bảy chiếc chén hiện trong mây, mỗi chén một ảo ảnh: tình yêu, châu báu, vinh quang, hiểm nguy. Đây là chặng của vô số lựa chọn, ước vọng viển vông và ảo tưởng — phải tỉnh táo nhận ra đâu là khát khao thật giữa muôn điều quyến rũ.',
+  c8:'Sau khi nhìn rõ ảo ảnh ở Bảy Cốc, người ấy quyết định rời đi. Bỏ lại tám chiếc chén xếp ngay ngắn mà vẫn thấy thiếu vắng, họ chống gậy quay lưng bước vào đêm trăng. Đây là chặng dứt áo can đảm — từ bỏ thứ tưởng đủ đầy để đi tìm ý nghĩa sâu hơn mà lòng còn khuyết.',
+  c9:'Sau cuộc ra đi đơn độc ở Tám Cốc, phần thưởng cảm xúc đã đến. Người đàn ông ngồi khoanh tay mãn nguyện trước chín chiếc chén bày như chiến lợi phẩm — đây là "lá ước nguyện", sự sung túc và hài lòng. Nhưng đó còn là niềm vui một mình, no đủ mà chưa được sẻ chia.',
+  c10:'Đỉnh cao và khép lại hành trình: nối tiếp niềm vui riêng của Chín Cốc, hạnh phúc nay được san sẻ trong tình thân. Cặp vợ chồng dang tay, lũ trẻ nô đùa dưới cầu vồng mười chiếc chén — tình yêu trọn vẹn, mái ấm hài hoà. Đây là an vui bền lâu, sâu lắng hơn mọi khoảnh khắc trước, vì được sống cùng những người ta thương.',
+  c11:'Mở đầu bốn chặng trưởng thành của tâm hồn: Hầu Cốc là đứa trẻ trong ta, ngỡ ngàng nâng chiếc chén có chú cá nhỏ ngoi lên. Tuổi mới chớm của cảm xúc — nhạy cảm, mộng mơ, cởi mở đón những thông điệp bất ngờ từ trái tim và trực giác, học cách lắng nghe tiếng nói nội tâm.',
+  c12:'Sau sự ngây thơ của Hầu Cốc, Kỵ Sĩ Cốc lên đường hành động. Chàng cưỡi ngựa trắng thong thả, nâng chén như lời mời gọi — kẻ lãng mạn duy mỹ đi theo tiếng gọi con tim, mang đến tình yêu và cảm hứng. Đây là cảm xúc được tỏ bày và theo đuổi, dù đôi khi mơ mộng nhiều hơn thực tế.',
+  c13:'Hoàng Hậu Cốc là sự thấu cảm đã chín muồi từ bên trong. Bà ngồi bên bờ nước, đăm chiêu ngắm chiếc chén nắp kín cầu kỳ — bậc thầy của trực giác và lòng trắc ẩn, cảm nhận sâu sắc mọi điều mà không bị cảm xúc cuốn trôi. Đây là chặng làm chủ tâm hồn trong tĩnh lặng và yêu thương.',
+  c14:'Khép lại "gia đình" Bộ Cốc: Vua Cốc là sự làm chủ cảm xúc hướng ra thế giới. Ngồi vững trên ngai giữa biển động mà lòng vẫn an, ông cầm chén điềm tĩnh — người từng trải mọi vui buồn, mất mát, nay đáp lại đời bằng bao dung và quân bình. Đỉnh cao trưởng thành: cảm sâu nhưng vẫn vững vàng dẫn dắt.',
+  s1:'Mở đầu hành trình tâm trí, Át Kiếm là bàn tay trồi lên từ mây, nắm thanh kiếm đội vương miện: khoảnh khắc minh triết sắc bén cắt phăng mọi mơ hồ. Đây là tia sáng "à, mình hiểu rồi" — sự thật và quyết tâm nguyên sơ. Nhưng kiếm có hai lưỡi: sức mạnh này có thể khai mở, cũng có thể làm tổn thương, đặt nền cho cả chặng đường phía trước.',
+  s2:'Sau sự rõ ràng của Át, Hai Kiếm là khi tâm trí khựng lại: người phụ nữ bịt mắt, hai kiếm bắt chéo trước ngực, giữ thế cân bằng cứng nhắc. Đây là bế tắc — ta nhắm mắt để khỏi phải chọn, đình chiến tạm thời với chính mình. Sự thăng bằng này mong manh; sớm muộn phải mở mắt nhìn ra điều đang né tránh.',
+  s3:'Khi tấm khăn bịt mắt được gỡ ra và ta thấy sự thật, Ba Kiếm xuất hiện: trái tim bị ba lưỡi kiếm xuyên qua giữa trời mây mưa. Đây là nỗi đau tim vỡ, chia lìa, mất mát — hệ quả không thể tránh sau bế tắc của Hai Kiếm. Lá bài thành thật rằng tổn thương là có thật, nhưng cơn mưa rồi cũng gột rửa và qua đi.',
+  s4:'Sau nỗi đau buốt của Ba Kiếm, Bốn Kiếm là khoảng lặng cần thiết: hình tượng hiệp sĩ nằm yên trên mộ trong tư thế nguyện cầu, ba kiếm treo trên tường, một kiếm nằm dưới. Đây là nghỉ ngơi, tĩnh dưỡng, rút lui để hồi phục. Tâm trí kiệt sức được tạm ngưng chiến đấu — không phải đầu hàng, mà là dừng lại lấy sức.',
+  s5:'Nghỉ ngơi xong, xung đột trở lại nhưng cay đắng hơn ở Năm Kiếm: kẻ chiến thắng mỉm cười khinh khỉnh thu gom kiếm, hai người thua cuộc lủi thủi quay lưng bỏ đi. Đây là "thắng" mà hoá thua — chiến thắng bằng mọi giá, để lại nhục nhã và đổ vỡ. Lá bài nhắc rằng hơn thua bằng lời lẽ sắc bén thường khiến ta cô độc.',
+  s6:'Sau cuộc tranh đua hao tổn của Năm Kiếm, Sáu Kiếm là sự dịch chuyển khỏi vùng nước động: người lái đò đưa hành khách sang bờ bên kia, mặt nước phía trước lặng êm. Đây là chuyển tiếp, rời bỏ gánh nặng để đi tới nơi bình yên hơn. Chưa hẳn đã hết buồn, nhưng đây là bước rút lui khôn ngoan.',
+  s7:'Sau hành trình rời đi của Sáu Kiếm, Bảy Kiếm cho thấy mặt tinh ranh của trí óc: một người lén mang đi năm thanh kiếm khỏi doanh trại, bỏ lại hai thanh. Đây là mưu mẹo, lén lút, hành động một mình theo chiến lược riêng. Tâm trí ở đây chọn đường tắt và lảng tránh đối đầu — có thể khôn lanh, nhưng cũng dễ thành tự lừa dối.',
+  s8:'Mưu mẹo của Bảy Kiếm dẫn tới cái bẫy của Tám Kiếm: người phụ nữ bị trói, bịt mắt, đứng giữa vòng kiếm cắm quanh. Đây là sự giam cầm do chính tâm trí dựng nên — ta tin mình bế tắc, bất lực, là nạn nhân. Nhưng dây trói lỏng và lối ra vẫn còn đó; ngục tù này phần lớn nằm trong suy nghĩ.',
+  s9:'Nếu ở Tám Kiếm ta vẫn nhắm mắt không chịu bước ra, Chín Kiếm là đêm dài hệ quả: người ngồi bật dậy trên giường ôm mặt, chín thanh kiếm treo trên đầu trong bóng tối. Waite gọi đây là lá của nỗi tuyệt vọng tột cùng — lo âu, ác mộng, dằn vặt giữa khuya. Đây là khi nỗi sợ phình to nhất trong trí, dù phần lớn là bóng ma ta tự dựng.',
+  s10:'Sau đêm thống khổ của Chín Kiếm, Mười Kiếm là chạm đáy: một người nằm sấp, mười lưỡi kiếm cắm khắp lưng. Đây là kết thúc đau đớn, sụp đổ hoàn toàn — không thể tệ hơn được nữa. Nhưng chính vì đã tận cùng, phía chân trời đã hé một dải bình minh vàng: khi đã chạm đáy, con đường duy nhất còn lại là đi lên.',
+  s11:'Mở đầu bốn lá hoàng tộc của bộ Kiếm, Hầu Kiếm là người trẻ tò mò đứng trên gò cao, gió thổi tóc bay, kiếm giơ cao đầy cảnh giác. Theo Bunning, Hầu mang đến thử thách như một sứ giả: hãy dùng cái đầu, sống trung thực, công bằng và can đảm. Đây là tâm trí non trẻ, hiếu học, khởi đầu hành trình rèn luyện trí tuệ Khí.',
+  s12:'Tiếp nối Hầu, Kỵ Sĩ Kiếm phi nước đại lao về phía trước giữa gió giông, kiếm vung thẳng. Đây là trí óc hành động: thẳng thắn, sắc sảo, quả quyết lao vào ý tưởng của mình. Nhưng cùng sự nhạy bén ấy là nguy cơ cộc cằn, áp đặt, lạnh lùng — năng lượng tinh thần đầy nhiệt huyết nhưng còn bốc đồng, chưa biết tiết chế.',
+  s13:'Hoàng Hậu Kiếm ngồi vững trên ngai, một tay giơ kiếm thẳng đứng, một tay đưa ra như mời gọi sự thật. Sau nông nổi của Kỵ Sĩ, bà là trí tuệ đã chín qua trải nghiệm cả ngọt lẫn đắng. Theo Bunning, bà luôn nói thẳng sự thật, nhìn thấu động cơ ẩn giấu mà vẫn giữ được lòng thấu cảm. Đây là tâm trí trung thực, minh mẫn nhưng không còn cay nghiệt.',
+  s14:'Khép lại bộ Kiếm, Vua Kiếm ngồi nghiêm trên ngai, kiếm dựng thẳng đứng tượng trưng cho lẽ phải vô tư. Ông là đỉnh cao của trí tuệ Khí: thông tuệ, phân tích, mạch lạc, công minh và đạo đức. Sau cả hành trình từ tia sáng Át, qua đau khổ và bình minh của Mười, lưỡi kiếm sự thật giờ đã được làm chủ — dùng để xét xử công bằng và phụng sự, chứ không còn để làm tổn thương.',
+  p1:'Khởi đầu của cả hành trình: một bàn tay từ mây trao món quà của Đất — đồng tiền vàng giữa khu vườn yên ả. Pollack lưu ý đây là lá Át duy nhất không có giọt Yod rơi xuống, vì Đất tự thân đã mang phép màu trong sự đặc chắc của nó. Đây là hạt mầm cơ hội, sức khoẻ, của cải; mọi lá sau đều lớn lên từ tiềm năng được gieo ở đây.',
+  p2:'Sau khi nhận hạt mầm, ta bước vào nhịp sống thực: chàng trai nhảy múa tung hứng hai đồng tiền nối nhau bằng dải vô cực. Đây là nghệ thuật giữ thăng bằng giữa nhiều ưu tiên — và như Pollack nói, một điệu nhảy hơn là bữa tiệc, nhắc rằng vui chơi nhẹ nhàng cũng dạy ta điều quý. Là bước chuyển từ tiềm năng tĩnh sang xoay xở năng động.',
+  p3:'Từ tung hứng một mình, ta bước vào lao động chung: người thợ điêu khắc làm việc trong tu viện cùng thầy tu và kiến trúc sư. Pollack thấy ở đây sự kết hợp của kỹ năng, hiểu biết và khát vọng; Waite gọi đó là tay nghề được tôn vinh. Là khoảnh khắc tài năng cá nhân hoà vào dự án tập thể, đặt nền cho tinh thông về sau.',
+  p4:'Sau niềm vui được công nhận, nỗi sợ mất mát xuất hiện: người đàn ông đội vương miện ôm chặt một đồng, ghì một đồng trên đầu, giẫm hai đồng dưới chân — "giữ khư khư thứ mình có" (Waite). Pollack thấy kẻ keo kiệt tự đóng kín mình. Là chặng dừng phòng thủ: ổn định có được, nhưng bám víu quá chặt thì chặn mất dòng chảy của sự sống.',
+  p5:'Sau khi co cụm giữ của, đến chặng thiếu thốn: hai kẻ hành khất khập khiễng đi qua khung cửa sổ sáng đèn giữa bão tuyết. Waite nói lá này báo trước gian khó vật chất; Pollack lưu ý họ vẫn sống sót và đôi khi không nhận ra nơi nương náu ngay bên cạnh. Là đáy của vòng cung — mất mát, bệnh tật, nhưng cũng là tình người bên nhau trong nghịch cảnh.',
+  p6:'Sau cảnh thiếu thốn, đến bàn tay sẻ chia: một người trong dáng vẻ thương nhân cân tiền trên cán cân rồi phân phát cho người khốn khó. Pollack chỉ ra cái cân ngụ ý cho đi có chừng mực và một thế trên–dưới; sâu hơn, là "cho người ta thứ họ có thể nhận". Là nhịp nghỉ về dòng chảy của trao và nhận sau khi đã nếm cảnh trắng tay.',
+  p7:'Sau khi nhận lại đôi chút, ta dừng để chiêm nghiệm: chàng trai tựa cuốc, đăm đăm nhìn bảy đồng tiền mọc trên bụi cây như "trái tim đặt cả ở đó" (Waite). Pollack gọi đây là khoảnh khắc nhìn lại với mãn nguyện điều đã gây dựng, khi thành quả đã đủ sức tự lớn. Là chặng kiên nhẫn chờ vụ mùa, lượng định công sức trước khi đầu tư tiếp.',
+  p8:'Sau lúc ngẫm về thành quả, ta quay lại bàn làm việc: người thợ đá miệt mài đục từng đồng tiền, treo lên như chiến lợi phẩm. Pollack nói Tám là sự rèn luyện sinh ra cả kỷ luật lẫn kỹ năng — và phải yêu chính công việc, không chỉ ngóng kết quả. Con đường dẫn tới làng phố nhắc rằng việc làm chỉ có nghĩa khi phục vụ cộng đồng. Là chặng mài giũa thành thạo.',
+  p9:'Sau khổ luyện, đến mùa quả ngọt một mình: người phụ nữ thanh nhã đứng giữa vườn nho trĩu quả, chim ưng đậu trên tay. Pollack nhấn mạnh đây là tự ý thức và kỷ luật đã "bay bổng" — thành công trong việc tự tạo nên chính mình; con chim bịt mũ là ý chí làm chủ. Nhưng nàng đứng một mình: thành tựu này đòi sự tự lực và đôi chút cô đơn.',
+  p10:'Đỉnh cao của vòng cung: một gia đình ba thế hệ dưới vòm cổng, bên ông lão và đôi chó, mười đồng tiền xếp thành Cây Sự Sống. Waite gọi đây là của cải, gia tộc, mái nhà bền vững. Pollack thấy "cánh cổng" mở vào phép màu ẩn trong đời thường — nhưng gia đình lại xem điều đó là hiển nhiên. Là di sản lâu dài, gói trọn hành trình gây dựng vật chất.',
+  p11:'Mở đầu bốn lá hoàng gia, ở bậc non trẻ nhất: một thiếu niên nâng niu đồng tiền lơ lửng, "chăm chú nhìn, hờ hững với xung quanh" (Waite). Pollack gọi cậu là người học trò say mê việc học hơn phần thưởng. Là tinh thần học hỏi, tin mới và khởi sự — năng lượng tươi non khởi động lại vòng cung ở một tầng trưởng thành mới.',
+  p12:'Sau sự háo hức của Hầu, đến người lao động bền bỉ: kỵ sĩ ngồi vững trên con ngựa nặng nề, chậm rãi, "phô đồng tiền nhưng không nhìn vào nó" (Waite). Pollack nói chàng cần mẫn, đáng tin, nhưng vì chỉ lo việc thực dụng mà đánh mất ý nghĩa sâu xa của sức mạnh mình. Là chặng kiên trì, trách nhiệm và đều đặn — đức nhẫn nại của Đất.',
+  p13:'Trưởng thành về phần nữ tính: hoàng hậu ngồi giữa cánh đồng nở hồng, ôm đồng tiền bằng cả hai tay, "có thể thấy cả thế giới trong đó" (Waite). Pollack nói nàng yêu và hợp nhất với thiên nhiên hơn mọi lá Tiểu Bí, mang sự tự tin và lòng quảng đại. Là người chăm nuôi ấm áp, vừa lo toan đời sống vừa nuôi dưỡng người khác — sự sung túc đã biết toả ra.',
+  p14:'Lá cuối của bộ và của cả Tiểu Bí Ẩn: nhà vua ngồi thư thái giữa vườn nho, lâu đài sau lưng, âu yếm nhìn đồng tiền — biểu tượng cho năng lực và thành tựu (Pollack). Waite thấy ở đây trí tuệ thực tiễn và thành công trong sự nghiệp. Là đỉnh chín muồi của Đất: làm chủ thế giới vật chất một cách hài lòng, hào phóng. Pollack nói nếu xếp thành vòng tròn, Vua Tiền nối liền với Chàng Khờ — kết thúc gặp lại khởi đầu.',
+};
 const MINOR = [];
 ['w','c','s','p'].forEach(su=>{
   const S=SUITS[su];
   MINOR_TXT[su].forEach((row,idx)=>{
-    const R=RANKS[idx];
-    MINOR.push({ id:su+R.k, suit:su, suitVi:S.vi, el:S.el, rank:R.k, rankVi:R.vi,
+    const R=RANKS[idx]; const id=su+R.k;
+    MINOR.push({ id, suit:su, suitVi:S.vi, el:S.el, rank:R.k, rankVi:R.vi,
       emoji:RANK_EMOJI[R.k]||S.emoji, name:`${R.vi} ${S.short}`, en:`${R.en} of ${S.en}`,
-      keys:row[0], up:row[1], rev:row[2] });
+      keys:row[0], up:row[1], rev:row[2], meo:MINOR_MEO[id], sym:SYM_MIN[id], role:ROLE_MIN[id] });
   });
 });
 CARDS.forEach(c=>c.id=c.n);          // Ẩn Chính: id = số lá (0–21)
@@ -1286,14 +1464,17 @@ function openLesson(id){
   document.getElementById('m-keys').innerHTML=c.keys.map(k=>`<span class="key">${k}</span>`).join('');
   document.getElementById('m-astro').textContent=cardAstro(c);
   document.getElementById('m-kab').innerHTML=cardKabbalah(c);
-  // khối "Trong hành trình" chỉ cho Ẩn Chính
+  // khối câu chuyện: Ẩn Chính → "Trong hành trình" (Chàng Khờ); Ẩn Phụ → "Câu chuyện của bộ"
   const roleBlock=document.getElementById('m-role').closest('.lesson__block');
-  if(c.role){ roleBlock.style.display=''; document.getElementById('m-role').textContent=c.role; }
+  if(c.role){ roleBlock.style.display='';
+    document.getElementById('m-role-h').textContent = c.suit ? '🗺️ Câu chuyện của bộ' : '🗺️ Trong hành trình';
+    document.getElementById('m-role').textContent=c.role; }
   else roleBlock.style.display='none';
   document.getElementById('m-up').textContent=c.up;
-  // biểu tượng trên tranh — chỉ Ẩn Chính
+  // biểu tượng trên tranh RWS — cả Ẩn Chính & Ẩn Phụ
   const symBlock=document.getElementById('m-sym-block');
-  if(!c.suit && SYM_MAJ[c.n]){ symBlock.style.display=''; document.getElementById('m-sym').textContent=SYM_MAJ[c.n]; }
+  const symTxt = c.suit ? c.sym : SYM_MAJ[c.n];
+  if(symTxt){ symBlock.style.display=''; document.getElementById('m-sym').textContent=symTxt; }
   else symBlock.style.display='none';
   document.getElementById('m-rev').textContent=c.rev;
   // lời Mèo dặn chỉ có ở Ẩn Chính
