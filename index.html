@@ -33,6 +33,8 @@
   --mystic:#8a5cff; --mystic-soft:#c9b3ff; --gold:#ffcf6b;
   --card-bg:linear-gradient(160deg,#3a2c66,#5b3f9e 55%,#3a2c66);
   --card-edge:rgba(255,255,255,.5);
+  /* con trỏ = cây đũa phép (tím mystic + trăng vàng + sao) */
+  --wand:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 64 64'%3E%3Cdefs%3E%3Cfilter id='s' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeDropShadow dx='1' dy='1' stdDeviation='1' flood-color='%235b4a52' flood-opacity='0.15'/%3E%3C/filter%3E%3C/defs%3E%3Cg filter='url(%23s)' transform='rotate(-15 32 32)'%3E%3Crect x='28' y='20' width='8' height='40' rx='4' fill='%238a5cff' stroke='%23ffffff' stroke-width='2'/%3E%3Ccircle cx='32' cy='18' r='8' fill='%23ffd6e0' stroke='%23ffffff' stroke-width='2'/%3E%3Cpath d='M34 14 a5 5 0 1 0 0 8 a3.5 3.5 0 1 1 0 -8' fill='%23ffcf6b'/%3E%3Cpath d='M42 10 l1 2.5 l2.5 1 l-2.5 1 l-1 2.5 l-1 -2.5 l-2.5 -1 l2.5 -1 z' fill='%23ffffff'/%3E%3C/g%3E%3C/svg%3E") 16 0;
   /* con trỏ = 2 dấu chân mèo 🐾 */
   --paw:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='40'%20viewBox='0%200%2040%2040'%3E%3Cg%20fill='%23ff7fa3'%20stroke='%23ffffff'%20stroke-width='1.4'%3E%3Cg%20transform='translate(0,1)%20scale(0.5)'%3E%3Cellipse%20cx='16'%20cy='21'%20rx='8'%20ry='7'/%3E%3Cellipse%20cx='7'%20cy='13'%20rx='3.4'%20ry='3.8'/%3E%3Cellipse%20cx='13'%20cy='7.5'%20rx='3.4'%20ry='4'/%3E%3Cellipse%20cx='19'%20cy='7.5'%20rx='3.4'%20ry='4'/%3E%3Cellipse%20cx='25'%20cy='13'%20rx='3.4'%20ry='3.8'/%3E%3C/g%3E%3Cg%20transform='translate(15,16)%20scale(0.5)'%3E%3Cellipse%20cx='16'%20cy='21'%20rx='8'%20ry='7'/%3E%3Cellipse%20cx='7'%20cy='13'%20rx='3.4'%20ry='3.8'/%3E%3Cellipse%20cx='13'%20cy='7.5'%20rx='3.4'%20ry='4'/%3E%3Cellipse%20cx='19'%20cy='7.5'%20rx='3.4'%20ry='4'/%3E%3Cellipse%20cx='25'%20cy='13'%20rx='3.4'%20ry='3.8'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") 6 8;
 }
@@ -55,7 +57,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:84px}
-body{font-family:var(--font-body);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;transition:background .5s,color .5s;overflow-x:clip;cursor:var(--paw),auto;padding-top:0;padding-bottom:80px}
+body{font-family:var(--font-body);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;transition:background .5s,color .5s;overflow-x:clip;cursor:var(--wand),auto;padding-top:0;padding-bottom:80px}
 .themetoggle{position:fixed;top:.6rem;right:.6rem;z-index:950;border:1px solid var(--glass-border);cursor:pointer;
   background:var(--glass-bg);backdrop-filter:blur(12px) saturate(1.3);-webkit-backdrop-filter:blur(12px) saturate(1.3);
   width:40px;height:40px;border-radius:50%;display:grid;place-items:center;box-shadow:var(--shadow-sm);transition:transform .18s}
@@ -66,7 +68,7 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;opacity:.85;transition
   background:radial-gradient(60vw 40vw at 12% 8%,var(--bg-1),transparent 60%),radial-gradient(55vw 45vw at 88% 4%,var(--bg-2),transparent 58%),radial-gradient(60vw 55vw at 50% 100%,var(--bg-3),transparent 60%)}
 ::selection{background:var(--pink-soft);color:var(--ink)}
 a{color:inherit}
-a,button,.nav__link,.tcard,.choice{cursor:var(--paw),pointer}
+a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .glass{background:var(--glass-bg);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--glass-border)}
 
 /* ===== thanh tab đáy (kiểu app) ===== */
