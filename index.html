@@ -542,8 +542,10 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 
 /* fx */
 .cursor-trail{position:fixed;inset:0;pointer-events:none;z-index:997}
-.cursor-trail__paw{position:absolute;transform:translate(-50%,-50%) rotate(var(--rot));font-size:1.1rem;animation:pawFade .9s ease-out forwards}
-@keyframes pawFade{0%{opacity:.85;transform:translate(-50%,-50%) rotate(var(--rot)) scale(.6)}100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--rot)) scale(1.3)}}
+.cursor-trail__spk{position:absolute;width:7px;height:7px;background:var(--c,#fff6d0);
+  clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);
+  transform:translate(-50%,-50%);animation:spkFade .8s ease-out forwards;filter:drop-shadow(0 0 2px rgba(255,210,120,.7))}
+@keyframes spkFade{0%{opacity:0;transform:translate(-50%,-50%) scale(.15) rotate(0)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(var(--s,.9)) rotate(45deg)}}
 .petals{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .petal{position:absolute;top:-8%;opacity:.7;animation-name:petalFall;animation-timing-function:linear;animation-iteration-count:infinite;will-change:transform}
 @keyframes petalFall{0%{transform:translateY(-10vh) translateX(0) rotate(0);opacity:0}10%{opacity:.75}100%{transform:translateY(112vh) translateX(var(--drift)) rotate(320deg);opacity:0}}
@@ -2258,13 +2260,15 @@ applyViews();
   requestAnimationFrame(frame);
 })();
 
-/* ===== vệt đũa phép theo chuột — bụi sao lấp lánh ===== */
-const PAWS=['✨','⭐','✨','💫','🌟']; const trail=document.getElementById('trail'); let seq=0,last=0;
+/* ===== vệt đũa phép theo chuột — sao lấp lánh nhỏ ===== */
+const SPK_COLORS=['#ffd98a','#fff6d0','#ffd0e7','#ffffff']; const trail=document.getElementById('trail'); let seq=0,last=0;
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
-  addEventListener('pointermove',e=>{ if(e.timeStamp-last<60)return; last=e.timeStamp; const id=++seq;
-    const s=document.createElement('span'); s.className='cursor-trail__paw'; s.textContent=PAWS[id%PAWS.length];
-    s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px'; s.style.setProperty('--rot',((id*47)%80-40)+'deg');
-    trail.appendChild(s); setTimeout(()=>s.remove(),900); });
+  addEventListener('pointermove',e=>{ if(e.pointerType==='touch')return; if(e.timeStamp-last<55)return; last=e.timeStamp; const id=++seq;
+    const s=document.createElement('span'); s.className='cursor-trail__spk';
+    s.style.left=(e.clientX+(id%5-2)*3)+'px'; s.style.top=(e.clientY+(id%3-1)*3)+'px';
+    s.style.setProperty('--c',SPK_COLORS[id%SPK_COLORS.length]);
+    s.style.setProperty('--s',(0.5+(id%4)*0.15).toFixed(2));
+    trail.appendChild(s); setTimeout(()=>s.remove(),800); });
 }
 
 /* ===== con trỏ Đũa Trăng–Sao Thổ bay theo chuột (chỉ máy tính, vòng xoay rõ) ===== */
