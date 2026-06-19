@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mèo Tiên Tri · Tự học Tarot theo Hành trình Chàng Khờ 🔮</title>
-<meta name="theme-color" content="#fff7f2">
+<meta name="theme-color" content="#f4eeff">
 <meta name="description" content="Tự học Tarot từ con số 0 cùng Mèo Tiên Tri — đi qua 22 lá Ẩn Chính theo Hành trình Chàng Khờ, mỗi lá một chặng nối tiếp nhau, kèm flashcard ôn nhớ và lưu tiến độ.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -19,18 +19,18 @@
 <style>
 /* ===== Design tokens (giống meomoe.com) — light / dark / sakura ===== */
 :root{
-  --pink:#ffb3c6; --pink-soft:#ffd6e0; --pink-deep:#ff7fa3;
-  --cream:#fff7f2; --peach:#ffe4d6; --lilac:#e6d6ff; --sky:#cdeffd; --yellow:#fff3c4; --mint:#d7f5e3;
-  --bg:#fff7f2; --bg-1:#ffe0ef; --bg-2:#e6f0ff; --bg-3:#f0e6ff;
-  --surface:#fff; --surface-2:#fff3f6; --white:#fff;
-  --ink:#5b4a52; --ink-soft:#8a7a82; --ink-faint:#b6a6ae;
-  --glass-bg:rgba(255,255,255,.62); --glass-border:rgba(255,255,255,.75); --border-soft:rgba(255,127,163,.18);
-  --shadow-sm:0 6px 16px rgba(255,127,163,.13); --shadow:0 14px 34px rgba(255,127,163,.18);
-  --shadow-md:0 18px 42px rgba(255,127,163,.2); --shadow-lg:0 30px 64px rgba(180,130,220,.24);
+  --pink:#ffb0d4; --pink-soft:#ffd9ec; --pink-deep:#ff7fb5;
+  --cream:#f5f0ff; --peach:#ffe6f2; --lilac:#e9dcff; --sky:#dbe7ff; --yellow:#fff1c2; --mint:#cdf3e6;
+  --bg:#f4eeff; --bg-1:#ffdcef; --bg-2:#dde8ff; --bg-3:#ecdcff;
+  --surface:#fff; --surface-2:#f6f1ff; --white:#fff;
+  --ink:#4f3d63; --ink-soft:#877a9e; --ink-faint:#b4a6c8;
+  --glass-bg:rgba(255,255,255,.6); --glass-border:rgba(255,255,255,.78); --border-soft:rgba(138,92,255,.16);
+  --shadow-sm:0 6px 16px rgba(138,92,255,.13); --shadow:0 14px 34px rgba(138,92,255,.17);
+  --shadow-md:0 18px 42px rgba(138,92,255,.2); --shadow-lg:0 30px 64px rgba(138,92,255,.24);
   --radius:26px; --radius-sm:16px; --app:1280px;
   --font-head:'Baloo 2',system-ui,sans-serif; --font-body:'Quicksand',system-ui,sans-serif;
-  /* màu huyền bí của Mèo Tiên Tri */
-  --mystic:#8a5cff; --mystic-soft:#c9b3ff; --gold:#ffcf6b;
+  /* màu huyền bí của Mèo Tiên Tri — tinh vân pastel + nhấn vàng (A+C) */
+  --mystic:#8a5cff; --mystic-soft:#c4aaff; --gold:#f3c24e;
   --card-bg:linear-gradient(160deg,#3a2c66,#5b3f9e 55%,#3a2c66);
   --card-edge:rgba(255,255,255,.5);
   /* con trỏ = cây đũa phép (tím mystic + trăng vàng + sao) */
@@ -64,8 +64,10 @@ body{font-family:var(--font-body);color:var(--ink);background:var(--bg);-webkit-
 .themetoggle:hover{transform:translateY(-1px) rotate(-8deg)}
 .themetoggle #theme-label{display:none}
 .themetoggle .nav__theme-emoji{font-size:1.25rem;line-height:1}
-body::before{content:'';position:fixed;inset:0;z-index:-1;opacity:.85;transition:background .6s;
+body::before{content:'';position:fixed;inset:0;z-index:-2;opacity:.85;transition:background .6s;
   background:radial-gradient(60vw 40vw at 12% 8%,var(--bg-1),transparent 60%),radial-gradient(55vw 45vw at 88% 4%,var(--bg-2),transparent 58%),radial-gradient(60vw 55vw at 50% 100%,var(--bg-3),transparent 60%)}
+/* tinh vân xoay lấp lánh — phủ full màn hình, sau nội dung */
+#sky{position:fixed;inset:0;z-index:-1;pointer-events:none;width:100%;height:100%;display:block}
 ::selection{background:var(--pink-soft);color:var(--ink)}
 a{color:inherit}
 a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
@@ -532,6 +534,7 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 </style>
 </head>
 <body>
+<canvas id="sky" aria-hidden="true"></canvas>
 <div class="petals" id="petals" aria-hidden="true"></div>
 <div class="cursor-trail" id="trail" aria-hidden="true"></div>
 
@@ -2109,8 +2112,8 @@ const fl=document.getElementById('floats');
 CUTE.forEach((c,i)=>{ const s=document.createElement('span'); s.className='float'; s.style.setProperty('--i',i); s.textContent=c; fl.appendChild(s); });
 
 /* ===== theme toggle (Ngày / Đêm / Sakura) — dùng chung khoá với hub ===== */
-const THEMES=[{id:'light',emoji:'☀️',label:'Ngày',color:'#fff7f2'},{id:'dark',emoji:'🌙',label:'Đêm',color:'#1c1430'},{id:'sakura',emoji:'🌸',label:'Sakura',color:'#ffe0ef'}];
-const PETAL_SETS={light:['🌸','🌷','✨','🔮'],sakura:['🌸','🌸','🌸','🌺','🍃'],dark:['⭐','✨','🌙','💫']};
+const THEMES=[{id:'light',emoji:'☀️',label:'Ngày',color:'#f4eeff'},{id:'dark',emoji:'🌙',label:'Đêm',color:'#1c1430'},{id:'sakura',emoji:'🌸',label:'Sakura',color:'#ffe0ef'}];
+const PETAL_SETS={light:['✨','⭐','🌙','💫','🔮'],sakura:['🌸','🌸','🌸','🌺','🍃'],dark:['⭐','✨','🌙','💫']};
 let themeId = localStorage.getItem('meo:theme') || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
 function applyTheme(id){
   const t=THEMES.find(x=>x.id===id)||THEMES[0]; themeId=t.id;
@@ -2176,12 +2179,59 @@ document.querySelectorAll('#seg-learn button').forEach(b=>b.addEventListener('cl
 document.getElementById('card-search').addEventListener('input',e=>runSearch(e.target.value));
 applyViews();
 
-/* ===== vệt dấu chân mèo theo chuột ===== */
-const PAWS=['🐾','🐾','✨','🔮']; const trail=document.getElementById('trail'); let seq=0,last=0;
+/* ===== tinh vân xoay lấp lánh — phủ full màn hình (PC · tablet · mobile) ===== */
+(function(){
+  const cv=document.getElementById('sky'); if(!cv||!cv.getContext) return;
+  const c=cv.getContext('2d');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // lilac · periwinkle · pink · mint · gold (pastel, alpha thấp để vẫn sáng sủa)
+  const COLORS=['201,179,255','138,123,255','255,168,212','185,236,216','243,194,78'];
+  let w,h,dpr,cx,cy,R,blobs,stars;
+  function build(){
+    dpr=Math.min(window.devicePixelRatio||1,1.5);
+    w=cv.width=Math.round(innerWidth*dpr); h=cv.height=Math.round(innerHeight*dpr);
+    cv.style.width=innerWidth+'px'; cv.style.height=innerHeight+'px';
+    cx=w/2; cy=h*0.42; R=Math.hypot(w,h);
+    const nb=Math.max(6,Math.min(9,Math.round(innerWidth/210)));
+    blobs=[...Array(nb)].map((_,i)=>({ ang:(i/nb)*6.283+Math.random()*0.5,
+      rad:(0.1+Math.random()*0.42)*R*0.5, size:(0.22+Math.random()*0.2)*R,
+      col:COLORS[i%COLORS.length], a:0.06+Math.random()*0.06 }));
+    const ns=Math.min(120,Math.max(40,Math.round(innerWidth*innerHeight/14000)));
+    stars=[...Array(ns)].map(()=>({ ang:Math.random()*6.283, rad:(0.04+Math.random()*0.66)*R*0.5,
+      size:(Math.random()*1.7+0.5)*dpr, tw:Math.random()*6.283, sp:Math.random()*0.05+0.012,
+      gold:Math.random()<0.22 }));
+  }
+  build(); addEventListener('resize',build,{passive:true});
+  let t=0;
+  function star4(x,y,r,col,o){ c.save();c.translate(x,y);c.fillStyle='rgba('+col+','+o+')';
+    c.beginPath();for(let i=0;i<4;i++){c.rotate(Math.PI/2);c.moveTo(0,0);c.quadraticCurveTo(r*0.32,r*0.32,0,r);c.quadraticCurveTo(-r*0.32,r*0.32,0,0);}c.fill();c.restore(); }
+  function frame(){
+    t++; if(document.hidden){ requestAnimationFrame(frame); return; }
+    const rot=reduce?0.4:t*0.0006;
+    c.clearRect(0,0,w,h);
+    // quầng sáng trung tâm cho tươi
+    const cg=c.createRadialGradient(cx,cy,0,cx,cy,R*0.5);
+    cg.addColorStop(0,'rgba(255,255,255,0.10)');cg.addColorStop(1,'rgba(255,255,255,0)');
+    c.fillStyle=cg;c.fillRect(0,0,w,h);
+    for(const b of blobs){ const a=b.ang+rot, x=cx+Math.cos(a)*b.rad, y=cy+Math.sin(a)*b.rad;
+      const g=c.createRadialGradient(x,y,0,x,y,b.size);
+      g.addColorStop(0,'rgba('+b.col+','+b.a+')'); g.addColorStop(1,'rgba('+b.col+',0)');
+      c.fillStyle=g; c.fillRect(0,0,w,h); }
+    for(const s of stars){ const a=s.ang+rot*1.6, x=cx+Math.cos(a)*s.rad, y=cy+Math.sin(a)*s.rad;
+      const o=0.25+0.6*Math.abs(Math.sin(s.tw+(reduce?0:t*s.sp)));
+      if(s.gold){ star4(x,y,s.size*2.4,'243,194,78',o); }
+      else { c.beginPath();c.arc(x,y,s.size,0,6.283);c.fillStyle='rgba(255,255,255,'+o+')';c.fill(); } }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ===== vệt đũa phép theo chuột — bụi sao lấp lánh ===== */
+const PAWS=['✨','⭐','✨','💫','🌟']; const trail=document.getElementById('trail'); let seq=0,last=0;
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
-  addEventListener('pointermove',e=>{ if(e.timeStamp-last<70)return; last=e.timeStamp; const id=++seq;
+  addEventListener('pointermove',e=>{ if(e.timeStamp-last<60)return; last=e.timeStamp; const id=++seq;
     const s=document.createElement('span'); s.className='cursor-trail__paw'; s.textContent=PAWS[id%PAWS.length];
-    s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px'; s.style.setProperty('--rot',((id*37)%60-30)+'deg');
+    s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px'; s.style.setProperty('--rot',((id*47)%80-40)+'deg');
     trail.appendChild(s); setTimeout(()=>s.remove(),900); });
 }
 </script>
