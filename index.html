@@ -68,6 +68,14 @@ body::before{content:'';position:fixed;inset:0;z-index:-2;opacity:.85;transition
   background:radial-gradient(60vw 40vw at 12% 8%,var(--bg-1),transparent 60%),radial-gradient(55vw 45vw at 88% 4%,var(--bg-2),transparent 58%),radial-gradient(60vw 55vw at 50% 100%,var(--bg-3),transparent 60%)}
 /* tinh vân xoay lấp lánh — phủ full màn hình, sau nội dung */
 #sky{position:fixed;inset:0;z-index:-1;pointer-events:none;width:100%;height:100%;display:block}
+/* con trỏ Đũa Trăng–Sao Thổ (lớp bay theo chuột, chỉ máy tính) */
+#orbitcur{position:fixed;left:0;top:0;width:46px;height:46px;pointer-events:none;z-index:99999;display:none;
+  will-change:transform;filter:drop-shadow(0 3px 6px rgba(80,40,120,.35))}
+#orbitcur svg{width:100%;height:100%;display:block}
+body.orbit-on{cursor:none}
+body.orbit-on a,body.orbit-on button,body.orbit-on .nav__link,body.orbit-on .tcard,body.orbit-on .choice,
+body.orbit-on .themetoggle,body.orbit-on summary,body.orbit-on label,body.orbit-on .hubcard{cursor:none}
+body.orbit-on input,body.orbit-on textarea,body.orbit-on [contenteditable]{cursor:text}
 ::selection{background:var(--pink-soft);color:var(--ink)}
 a{color:inherit}
 a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
@@ -515,12 +523,22 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .about-card b{color:var(--mystic)}
 .note{max-width:680px;margin:1.6rem auto 0;text-align:center;color:var(--ink-faint);font-size:.9rem;line-height:1.6}
 
-/* footer */
-.footer{position:relative;text-align:center;padding:2.4rem 1.5rem 2rem;background:var(--pink-soft);color:var(--ink);margin-top:1.5rem;border-radius:28px 28px 0 0}
-.footer__cat{font-size:2rem;margin-bottom:.4rem}
-.footer p{margin:.2rem 0;font-size:.9rem}
-.footer__domain{color:var(--ink-soft);font-size:.82rem}
-.footer a{color:var(--mystic);font-weight:700;text-decoration:none}
+/* footer — thẻ dẫn về hub Meomoe Multiverse (format chung của hệ) */
+.footer{position:relative;text-align:center;padding:2.2rem 1.2rem 2rem;margin-top:1.5rem}
+.hubcard{display:flex;align-items:center;gap:.85rem;max-width:440px;margin:0 auto;text-align:left;
+  background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius-sm);
+  padding:.85rem 1.05rem;box-shadow:var(--shadow-sm);text-decoration:none;color:var(--ink);
+  transition:transform .2s,box-shadow .2s,border-color .2s}
+.hubcard:hover{transform:translateY(-3px);border-color:var(--mystic);box-shadow:var(--shadow)}
+.hubcard:focus-visible{outline:3px solid var(--mystic);outline-offset:2px}
+.hubcard__icon{width:46px;height:46px;border-radius:24%;flex-shrink:0;box-shadow:var(--shadow-sm)}
+.hubcard__txt{display:flex;flex-direction:column;gap:.15rem;line-height:1.36}
+.hubcard__txt b{font-family:var(--font-head);font-size:.92rem;color:var(--ink)}
+.hubcard__txt small{font-size:.78rem;color:var(--ink-soft)}
+.hubcard__txt i{font-style:normal;font-weight:700;color:var(--mystic)}
+.hubcard__arr{display:inline-block;font-weight:800;color:var(--mystic);transition:transform .2s}
+.hubcard:hover .hubcard__arr{transform:translateX(3px)}
+.footer__domain{color:var(--ink-soft);font-size:.8rem;margin-top:.9rem}
 
 /* fx */
 .cursor-trail{position:fixed;inset:0;pointer-events:none;z-index:997}
@@ -537,6 +555,15 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 <canvas id="sky" aria-hidden="true"></canvas>
 <div class="petals" id="petals" aria-hidden="true"></div>
 <div class="cursor-trail" id="trail" aria-hidden="true"></div>
+<div id="orbitcur" aria-hidden="true"><svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+  <g transform="rotate(-20 12 10)"><path d="M0 10 a12 4.1 0 1 0 24 0 a12 4.1 0 1 0 -24 0" fill="none" stroke="#e6b955" stroke-width="1" opacity=".4"/></g>
+  <path d="M27 28 L15.4 13.6" stroke="#b79cff" stroke-width="2.8" stroke-linecap="round"/>
+  <g transform="rotate(-20 12 10)"><path d="M12 3.4 A7 7 0 1 0 16.8 15 A5.5 5.5 0 1 1 12 3.4 Z" fill="#f3c24e" stroke="#fff8e6" stroke-width=".8" stroke-linejoin="round"/></g>
+  <g transform="rotate(-20 12 10)"><path d="M0 10 a12 4.1 0 1 0 24 0 a12 4.1 0 1 0 -24 0" fill="none" stroke="#e6b955" stroke-width="1" stroke-dasharray="14 60"/></g>
+  <g transform="rotate(-20 12 10)"><path id="o-cur" d="M0 10 a12 4.1 0 1 0 24 0 a12 4.1 0 1 0 -24 0" fill="none"/><path d="M0 -1.6 L.6 -.6 L1.6 0 L.6 .6 L0 1.6 L-.6 .6 L-1.6 0 L-.6 -.6 Z" fill="#fff8e6"><animateMotion dur="3.4s" repeatCount="indefinite" rotate="auto"><mpath href="#o-cur"/></animateMotion></path></g>
+  <path d="M19 18 l.5 1.3 1.3 .5 -1.3 .5 -.5 1.3 -.5 -1.3 -1.3 -.5 1.3 -.5 z" fill="#e6b955"/>
+  <path d="M24 23 l.4 1 1 .4 -1 .4 -.4 1 -.4 -1 -1 -.4 1 -.4 z" fill="#ffd9ec"/>
+</svg></div>
 
 <!-- nút đổi giao diện (nổi nhỏ góc phải) -->
 <button class="themetoggle" id="theme" aria-label="Đổi giao diện"><span class="nav__theme-emoji" id="theme-emoji">☀️</span><span id="theme-label">Ngày</span></button>
@@ -726,9 +753,14 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 
 <!-- FOOTER (theo theme, chỉ ở màn Nhà) -->
 <footer class="footer" data-view="home">
-  <div class="footer__cat">🐱🔮</div>
-  <p>Made with 🎀 &amp; 🐾 — một vũ trụ của <a href="https://multiverse.meomoe.com">Meomoe Multiverse</a></p>
-  <p class="footer__domain">Mèo Tiên Tri · tarot.meomoe.com · 2026</p>
+  <a class="hubcard" href="https://multiverse.meomoe.com">
+    <img class="hubcard__icon" src="icon-192.png?v=1" alt="Mèo Tiên Tri" width="46" height="46">
+    <span class="hubcard__txt">
+      <b>🐾 Mèo Tiên Tri là một góc nhỏ của vũ trụ Meomoe</b>
+      <small>Ghé <i>Meomoe multiverse</i> — gặp thêm những chú mèo khác <span class="hubcard__arr">→</span></small>
+    </span>
+  </a>
+  <p class="footer__domain">Made with 🎀 &amp; 🐾 · tarot.meomoe.com · 2026</p>
 </footer>
 
 <!-- LESSON MODAL -->
@@ -2234,6 +2266,20 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
     s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px'; s.style.setProperty('--rot',((id*47)%80-40)+'deg');
     trail.appendChild(s); setTimeout(()=>s.remove(),900); });
 }
+
+/* ===== con trỏ Đũa Trăng–Sao Thổ bay theo chuột (chỉ máy tính, vòng xoay rõ) ===== */
+(function(){
+  const el=document.getElementById('orbitcur'); if(!el) return;
+  if(!matchMedia('(pointer:fine)').matches) return;                 // cảm ứng → dùng con trỏ thường
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.body.classList.add('orbit-on'); el.style.display='block';
+  let x=innerWidth/2,y=innerHeight/2,raf=0;
+  function tick(){ el.style.transform='translate('+(x-18)+'px,'+(y-8)+'px)'; raf=0; }
+  tick();
+  addEventListener('pointermove',e=>{ if(e.pointerType==='touch')return; x=e.clientX; y=e.clientY; if(!raf)raf=requestAnimationFrame(tick); },{passive:true});
+  document.addEventListener('mouseleave',()=>{ el.style.opacity='0'; });
+  document.addEventListener('mouseenter',()=>{ el.style.opacity='1'; });
+})();
 </script>
 </body>
 </html>
