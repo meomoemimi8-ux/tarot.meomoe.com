@@ -530,6 +530,33 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .bc-note{max-width:560px;margin:1rem auto 0;text-align:center;color:var(--ink-soft);font-size:.82rem;line-height:1.55;background:var(--surface-2);border:1px dashed var(--mystic-soft);border-radius:var(--radius-sm);padding:.7rem .9rem}
 .birth-src{max-width:620px;margin:1rem auto 0;text-align:center;color:var(--ink-faint);font-size:.76rem;line-height:1.6}
 
+/* Có/Không — verdict */
+.verdict{text-align:center;background:linear-gradient(135deg,var(--mystic),var(--pink-deep));color:#fff;border-radius:var(--radius);padding:1rem 1.2rem;margin:0 auto 1.1rem;max-width:420px;box-shadow:var(--shadow)}
+.verdict__big{font-family:var(--font-head);font-weight:800;font-size:1.55rem}
+.verdict__sub{font-size:.82rem;opacity:.92;margin-top:.2rem}
+.sp-save{text-align:center;margin-top:1.1rem}
+.sp-saved{display:inline-block;margin-left:.6rem;color:var(--mystic);font-weight:700;font-size:.85rem}
+/* Nhật ký Tarot */
+.jrn-head{text-align:center;margin:2.6rem 0 .2rem;border-top:1px solid var(--border-soft);padding-top:1.8rem}
+.jrn-empty{text-align:center;color:var(--ink-faint);font-size:.9rem;max-width:480px;margin:1rem auto;line-height:1.6}
+.jentry{max-width:680px;margin:0 auto 1rem;background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:1rem 1.1rem;box-shadow:var(--shadow-sm)}
+.jentry__top{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.jentry__title{font-family:var(--font-head);font-weight:800;font-size:.95rem;flex:1}
+.jentry__date{color:var(--ink-faint);font-size:.74rem;font-weight:700}
+.jentry__del{border:none;background:var(--surface-2);color:var(--ink-soft);border-radius:999px;width:26px;height:26px;cursor:var(--wand),pointer;font-size:.78rem;flex-shrink:0}
+.jentry__del:hover{background:var(--pink-soft);color:var(--pink-deep)}
+.jentry__cards{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.6rem}
+.jentry__cards>div{text-align:center}
+.jentry__cards .tcard{width:60px}
+.jchip{display:block;margin-top:.2rem;font-size:.64rem;font-weight:700;color:var(--ink-soft)}
+.jentry__note{width:100%;box-sizing:border-box;background:var(--surface-2);border:1px dashed var(--mystic-soft);border-radius:var(--radius-sm);padding:.55rem .7rem;font-family:var(--font-body);font-size:.88rem;color:var(--ink);resize:vertical;min-height:46px}
+.jentry__note:focus{outline:2px solid var(--mystic);border-style:solid}
+/* Tự vấn (reflection prompts) */
+.lesson__prompts{margin:1rem 0 .2rem}
+.lesson__prompts h4{font-family:var(--font-head);display:flex;align-items:center;gap:.4rem;font-size:.95rem;margin-bottom:.4rem}
+.lesson__prompts ul{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+.lesson__prompts li{background:var(--surface-2);border-left:3px solid var(--mystic-soft);border-radius:8px;padding:.45rem .7rem;font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+
 /* about */
 .about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.1rem}
 .about-card{border-radius:var(--radius);padding:1.3rem 1.4rem;box-shadow:var(--shadow);line-height:1.6;color:var(--ink-soft);font-size:.95rem;max-width:620px;margin:0 auto}
@@ -761,6 +788,12 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <div id="spread-board"></div>
   <div id="spread-read"></div>
   <details class="howto"><summary>📖 Cách đọc &amp; liên kết nhiều lá (mẹo từ sách)</summary><div id="howto-body"></div></details>
+
+  <div class="jrn-head">
+    <h3 class="section-title__heading">📔 Nhật ký Tarot</h3>
+    <p class="section__lead">Lưu lại các lần rút bài kèm cảm nhận của bạn — xem lại để thấy mình lớn lên qua từng lá.</p>
+  </div>
+  <div id="journal"></div>
 </section>
 
 <!-- ABOUT -->
@@ -814,6 +847,7 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
         <div class="lesson__block" id="m-sym-block"><h4>🔍 Biểu tượng trên tranh</h4><p id="m-sym"></p></div>
         <div class="lesson__block"><h4>⬇️ Nghĩa ngược</h4><p id="m-rev"></p></div>
         <div class="lesson__meo"><span class="lesson__meo-cat">🐱</span><span><b>Mèo dặn:</b> <span id="m-meo"></span></span></div>
+        <div class="lesson__prompts"><h4>✍️ Tự vấn cùng lá này</h4><ul id="m-prompts"></ul></div>
         <div class="lesson__note">
           <label class="lesson__note-h" for="m-note">📝 Ghi chú của bạn <span class="lesson__note-saved" id="m-note-saved">✓ đã lưu</span></label>
           <textarea id="m-note" class="lesson__note-area" rows="3" placeholder="Ghi lại cảm nhận, từ khoá riêng, hay điều bạn muốn nhớ về lá này… (tự lưu trên máy)"></textarea>
@@ -1565,6 +1599,8 @@ function openLesson(id){
   const meoBox=document.querySelector('.lesson__meo');
   if(c.meo){ meoBox.style.display=''; document.getElementById('m-meo').textContent=c.meo; }
   else meoBox.style.display='none';
+  // câu hỏi tự vấn (theo từ khoá thật của lá)
+  document.getElementById('m-prompts').innerHTML = promptsFor(c).map(q=>`<li>${q}</li>`).join('');
   // ghi chú cá nhân của lá này
   document.getElementById('m-note').value = NOTES[id] || '';
   document.getElementById('m-note-saved').classList.remove('show');
@@ -1801,6 +1837,14 @@ const SPREADS=[
    groups:[{name:'✚ Thập tự (1–6)',from:0,to:6},{name:'📍 Cây gậy (7–10)',from:6,to:10}],
    pos:[['Hiện tại','Tình thế & bạn lúc này.'],['Thử thách','Điều đang cản, phải vượt qua.'],['Quá khứ','Việc gần đây tạo nên hiện tại.'],['Tương lai gần','Diễn biến sắp tới nếu không đổi.'],['Ý thức','Mục tiêu, điều bạn đang hướng tới.'],['Vô thức','Điều thật sự chi phối bên dưới.'],['Bản thân','Cách bạn nhìn mình & ảnh hưởng của nó.'],['Bên ngoài','Người & môi trường quanh bạn.'],['Hy vọng & Nỗi sợ','Điều bạn thầm mong và thầm sợ.'],['Kết quả','Kết cục tổng hợp từ tất cả.']],
    tips:['Đọc 2 chặng: Thập tự (1–6) = lõi vấn đề; Cây gậy (7–10) = bối cảnh & kết.','Đọc theo cặp: 5↔6 (ý thức vs vô thức), 4↔10 (tương lai gần vs kết cục).','Lá 10 là tổng hợp — xem 7,8,9 dồn về nó thế nào.']},
+  {id:'yesno',ic:'⚖️',name:'Có / Không',title:'Có hay Không',verdict:true,
+   purpose:'Câu hỏi cần câu trả lời dứt khoát. Rút 3 lá, đếm xuôi/ngược để ra khuynh hướng Có/Không — kèm lý do để hiểu vì sao.',
+   pos:[['Bối cảnh','Nền tảng & điều dẫn tới câu hỏi.'],['Hiện tại','Năng lượng xoay quanh việc này lúc này.'],['Kết quả','Xu hướng kết quả nếu giữ nguyên đà.']],
+   tips:['Quy ước: lá xuôi nghiêng “Có”, lá ngược nghiêng “Không” — đa số thắng.','Lá Ẩn Chính nặng ký hơn; lá sáng (Mặt Trời, Thế Giới…) thiên “Có”, lá nặng (Tháp, 10 Kiếm…) thiên “Không”.','Đọc cả 3 lá để hiểu VÌ SAO, đừng chỉ nhìn kết luận.']},
+  {id:'love',ic:'💞',name:'5 lá · Tình yêu',title:'Trải bài Tình yêu',
+   purpose:'Nhìn toàn cảnh một mối quan hệ: bạn, người ấy, bản thân mối quan hệ, và dòng thời gian quá khứ → tương lai.',
+   pos:[['Bạn','Bạn trong mối quan hệ này — cảm xúc & vai trò của bạn.'],['Người ấy','Đối phương — cảm xúc & vai trò của họ.'],['Mối quan hệ','“Thực thể” thứ ba: bản thân mối quan hệ giữa hai người.'],['Quá khứ','Điều hai người mang theo từ quá khứ.'],['Tương lai','Hướng đi sắp tới của mối quan hệ.']],
+   tips:['So lá Bạn (1) với Người ấy (2): hai năng lượng hợp hay khắc?','Lá Mối quan hệ (3) là trọng tâm — “chất” thật của tình cảm.','Quá khứ (4) → Tương lai (5): đang lặp lại hay đang chuyển hướng?']},
 ];
 let curSpread='ppf', draws=[];
 function curSp(){ return SPREADS.find(s=>s.id===curSpread); }
@@ -1873,7 +1917,13 @@ function renderSpreadResult(){
   }
   board.querySelectorAll('.tcard[data-id]').forEach(b=>b.onclick=()=>openLesson(coerceId(b.dataset.id)));
   const rows=draws.map((d,i)=>{const c=byId(d.id);return `<div class="rd"><h4><span class="spot__no">${i+1}</span> ${sp.pos[i][0]} — ${c.name} ${oriBadge(d.rev)}</h4><p class="rd-pos">${sp.pos[i][1]}</p><p>${d.rev?c.rev:c.up}</p></div>`;}).join('');
-  read.innerHTML=rows+synthHTML(sp);
+  let head='';
+  if(sp.verdict){ const up=draws.filter(d=>!d.rev).length;
+    const v=up===3?['CÓ ✅','rất rõ — cả 3 lá xuôi']:up===2?['Nghiêng CÓ 🙂','2/3 lá xuôi']:up===1?['Nghiêng KHÔNG 😕','2/3 lá ngược']:['KHÔNG ❌','rất rõ — cả 3 lá ngược'];
+    head=`<div class="verdict"><div class="verdict__big">${v[0]}</div><div class="verdict__sub">${v[1]} · đọc 3 lá để hiểu vì sao</div></div>`;
+  }
+  read.innerHTML=head+rows+synthHTML(sp)+`<div class="sp-save"><button class="btn btn--soft btn--sm" id="sp-journal">📔 Lưu vào nhật ký</button><span id="sp-saved" class="sp-saved"></span></div>`;
+  document.getElementById('sp-journal').onclick=saveSpreadToJournal;
   read.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function buildHowto(){
@@ -1891,6 +1941,41 @@ function buildHowto(){
     <div class="vcard glass"><h3>🧭 6 bước giải một trải bài</h3><ol class="readsteps"><li>Nhắc lại câu hỏi.</li><li>Liếc tổng thể: sáng/tối, nhiều Ẩn Chính hay Phụ, chất nào trội.</li><li>Đọc từng lá theo đúng vị trí.</li><li>Đọc theo cặp (dùng nguyên tố tương tác).</li><li>Soi mẫu lặp: số, chất, court, lá ngược.</li><li>Nối thành câu chuyện → chốt câu trả lời + lời khuyên.</li></ol></div>
   </div>`;
 }
+
+/* ===== câu hỏi tự vấn theo lá (dựa trên từ khoá thật của lá) ===== */
+function promptsFor(c){
+  const k=c.keys||[]; const a=(k[0]||'').toLowerCase(), b=(k[1]||k[0]||'').toLowerCase(), d=(k[2]||k[0]||'').toLowerCase();
+  return [
+    `Trong cuộc sống của bạn lúc này, năng lượng “${a}” đang hiện diện rõ nhất ở đâu?`,
+    `Nếu “${c.name}” là lời nhắc hôm nay, bạn có thể nuôi dưỡng “${b}” bằng một việc nhỏ nào?`,
+    `Điều gì đang cản trở “${d}” trong bạn — và bạn sẵn sàng buông bớt điều gì?`,
+  ];
+}
+
+/* ===== Nhật ký Tarot (lưu các lần rút + cảm nhận) ===== */
+const JOURNAL = JSON.parse(localStorage.getItem('meo:tarot:journal')||'[]');
+function persistJournal(){ localStorage.setItem('meo:tarot:journal',JSON.stringify(JOURNAL.slice(0,60))); }
+function fmtJ(ts){ const d=new Date(ts); return d.toLocaleDateString('vi-VN')+' · '+d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}); }
+function saveSpreadToJournal(){
+  if(!draws.length) return; const sp=curSp();
+  JOURNAL.unshift({ ts:Date.now(), title:sp.ic+' '+sp.title,
+    cards:draws.map((d,i)=>({id:d.id,rev:d.rev,pos:sp.pos[i][0]})), note:'' });
+  persistJournal(); renderJournal();
+  const s=document.getElementById('sp-saved'); if(s){ s.textContent='✓ Đã lưu vào nhật ký'; setTimeout(()=>{s.textContent='';},2200); }
+}
+function renderJournal(){
+  const box=document.getElementById('journal'); if(!box) return;
+  if(!JOURNAL.length){ box.innerHTML=`<p class="jrn-empty">🐱 Chưa có nhật ký nào. Rút một bài ở trên rồi bấm <b>“📔 Lưu vào nhật ký”</b> nha!</p>`; return; }
+  box.innerHTML=JOURNAL.map((e,idx)=>`<div class="jentry">
+      <div class="jentry__top"><span class="jentry__title">${e.title}</span><span class="jentry__date">${fmtJ(e.ts)}</span><button class="jentry__del" title="Xoá" data-del="${idx}">✕</button></div>
+      <div class="jentry__cards">${e.cards.map(cd=>{const c=byId(coerceId(cd.id));return `<div><button class="tcard${c.suit?(' tcard--'+c.suit):''}" data-id="${cd.id}">${tileInner(c,false)}</button><span class="jchip">${cd.pos}${cd.rev?' ⤥':''}</span></div>`;}).join('')}</div>
+      <textarea class="jentry__note" data-note="${idx}" placeholder="Cảm nhận của bạn về lần rút này…">${e.note||''}</textarea>
+    </div>`).join('');
+  box.querySelectorAll('.tcard[data-id]').forEach(b=>b.onclick=()=>openLesson(coerceId(b.dataset.id)));
+  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ JOURNAL.splice(+b.dataset.del,1); persistJournal(); renderJournal(); });
+  box.querySelectorAll('[data-note]').forEach(t=>{ let tm; t.addEventListener('input',()=>{ clearTimeout(tm); tm=setTimeout(()=>{ JOURNAL[+t.dataset.note].note=t.value; persistJournal(); },400); }); });
+}
+renderJournal();
 
 /* ===== Đọc theo chủ đề (Tình cảm / Sự nghiệp / Học tập) ===== */
 const TOPICS={
