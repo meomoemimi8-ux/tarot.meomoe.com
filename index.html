@@ -77,6 +77,18 @@ body{font-family:var(--font-body);color:var(--ink);background:var(--bg);-webkit-
 #iosHint.show{display:block}
 #iosHint b{color:var(--mystic)}
 #iosHint .x{position:absolute;top:.25rem;right:.5rem;cursor:var(--wand),pointer;color:var(--ink-faint);font-weight:800}
+/* nút bật/tắt âm thanh */
+.soundtoggle{position:fixed;top:.6rem;right:3.35rem;z-index:950;border:1px solid var(--glass-border);cursor:var(--wand),pointer;
+  background:var(--glass-bg);backdrop-filter:blur(12px) saturate(1.3);-webkit-backdrop-filter:blur(12px) saturate(1.3);
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;box-shadow:var(--shadow-sm);transition:transform .18s;font-size:1.05rem}
+.soundtoggle:hover{transform:translateY(-1px)}
+.soundtoggle.is-off{opacity:.5}
+/* Bạn có biết? */
+.trivia{max-width:560px;margin:1.4rem auto 0;background:var(--surface);border:1px dashed var(--mystic-soft);border-radius:var(--radius);padding:1.1rem 1.3rem;box-shadow:var(--shadow-sm);text-align:center}
+.trivia__h{font-family:var(--font-head);font-weight:800;color:var(--mystic);font-size:.92rem;margin-bottom:.45rem}
+.trivia__t{color:var(--ink-soft);line-height:1.6;font-size:.95rem;min-height:3em}
+.trivia__btn{margin-top:.75rem;border:1px solid var(--mystic-soft);background:var(--surface-2);color:var(--mystic);font-family:var(--font-head);font-weight:700;font-size:.8rem;padding:.35rem .9rem;border-radius:999px;cursor:var(--wand),pointer;transition:transform .15s}
+.trivia__btn:hover{transform:translateY(-2px)}
 body::before{content:'';position:fixed;inset:0;z-index:-2;opacity:.85;transition:background .6s;
   background:radial-gradient(60vw 40vw at 12% 8%,var(--bg-1),transparent 60%),radial-gradient(55vw 45vw at 88% 4%,var(--bg-2),transparent 58%),radial-gradient(60vw 55vw at 50% 100%,var(--bg-3),transparent 60%)}
 /* tinh vân xoay lấp lánh — phủ full màn hình, sau nội dung */
@@ -642,6 +654,9 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <path d="M24 23 l.4 1 1 .4 -1 .4 -.4 1 -.4 -1 -1 -.4 1 -.4 z" fill="#ffd9ec"/>
 </svg></div>
 
+<!-- nút bật/tắt âm thanh huyền bí -->
+<button class="soundtoggle is-off" id="sound" aria-label="Bật/tắt âm thanh">🔈</button>
+
 <!-- nút đổi giao diện (nổi nhỏ góc phải) -->
 <button class="themetoggle" id="theme" aria-label="Đổi giao diện"><span class="nav__theme-emoji" id="theme-emoji">☀️</span><span id="theme-label">Ngày</span></button>
 
@@ -699,6 +714,11 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   </div>
   <p class="section__lead">Mỗi ngày một lá để <b>chiêm nghiệm</b>. Lá của hôm nay đã cố định — quay lại bao nhiêu lần vẫn là nó, tới nửa đêm mới đổi lá mới.</p>
   <div id="today-card"></div>
+  <div class="trivia">
+    <div class="trivia__h">🔮 Bạn có biết? <span style="color:var(--ink-faint);font-weight:600">· chuyện về Tarot</span></div>
+    <div class="trivia__t" id="trivia-t"></div>
+    <button class="trivia__btn" id="trivia-next">🔄 Điều thú vị khác</button>
+  </div>
 </section>
 
 <!-- LEARN sub-tabs + tìm kiếm -->
@@ -893,6 +913,7 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
         <div class="lesson__actions">
           <button class="btn btn--primary btn--sm" id="m-learn">📖 Đánh dấu đã học</button>
           <button class="btn btn--ghost btn--sm" id="m-review">🃏 Ôn lá này</button>
+          <button class="btn btn--soft btn--sm" id="m-share">📤 Chia sẻ</button>
         </div>
         <div class="lesson__nav">
           <button class="lesson__navbtn" id="m-prev"><small>← Lá trước</small><b id="m-prev-name"></b></button>
@@ -1778,7 +1799,7 @@ const modal=document.getElementById('modal');
 let current=0;
 function groupOf(c){ return c.suit ? MINOR.filter(x=>x.suit===c.suit) : CARDS; }
 function openLesson(id){
-  current=id; const c=byId(id);
+  current=id; const c=byId(id); window.MeoSfx&&window.MeoSfx();
   document.getElementById('m-card').innerHTML=`<div class="tcard${c.suit?(' tcard--'+c.suit):''}">${tileInner(c,false)}</div><img class="lesson__peek" src="tarot_sq.png" alt="Mèo Tiên Tri">`;
   if(c.suit){
     document.getElementById('m-chapter').textContent=`Ẩn Phụ · ${c.suitVi} · ${c.el}`;
@@ -2077,6 +2098,7 @@ function renderSpreadGuide(){
 function drawSpread(){
   const sp=curSp();
   draws=shuffle(ALL.map(c=>c.id)).slice(0,sp.pos.length).map(id=>({id,rev:srand()<0.5}));
+  window.MeoSfx&&window.MeoSfx();
   renderSpreadResult();
 }
 function posCardHTML(sp,i){
@@ -2677,6 +2699,94 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
   });
   document.getElementById('iosHintX').addEventListener('click',()=>hint.classList.remove('show'));
   addEventListener('appinstalled', ()=>{ btn.classList.remove('show'); hint.classList.remove('show'); });
+})();
+
+/* ===== âm thanh huyền bí (Web Audio, tự tạo — chạy offline) ===== */
+const Sound=(function(){
+  let ctx,master,started=false,on=false;
+  function init(){ if(ctx)return; const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return;
+    ctx=new AC(); master=ctx.createGain(); master.gain.value=0; master.connect(ctx.destination); }
+  function startAmbient(){ if(started||!ctx)return; started=true;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.connect(master);
+    [110,164.81,220].forEach((f,i)=>{ const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f;
+      const g=ctx.createGain(); g.gain.value=0.12/(i+1); o.connect(g); g.connect(lp);
+      const lfo=ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.05+i*0.03;
+      const lg=ctx.createGain(); lg.gain.value=0.04; lfo.connect(lg); lg.connect(g.gain); lfo.start(); o.start(); }); }
+  function setOn(v){ on=v;
+    if(on){ init(); if(!ctx)return; if(ctx.state==='suspended')ctx.resume(); startAmbient(); master.gain.setTargetAtTime(0.16,ctx.currentTime,1.4); }
+    else if(ctx){ master.gain.setTargetAtTime(0,ctx.currentTime,0.4); }
+    try{localStorage.setItem('meo:tarot:sound',on?'1':'0');}catch(e){} }
+  return {
+    toggle(){ setOn(!on); return on; }, isOn(){ return on; },
+    chime(){ if(!on||!ctx)return; const t=ctx.currentTime;
+      [784,1175,1568].forEach((f,i)=>{ const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f;
+        const g=ctx.createGain(); g.gain.setValueAtTime(0,t+i*0.05); g.gain.linearRampToValueAtTime(0.14/(i+1),t+i*0.05+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.05+0.9); o.connect(g); g.connect(master); o.start(t+i*0.05); o.stop(t+i*0.05+0.95); }); }
+  };
+})();
+window.MeoSfx=()=>{ try{Sound.chime();}catch(e){} };
+(function(){
+  const b=document.getElementById('sound'); if(!b) return;
+  function upd(){ b.textContent=Sound.isOn()?'🔊':'🔈'; b.classList.toggle('is-off',!Sound.isOn()); }
+  b.addEventListener('click',()=>{ Sound.toggle(); upd(); });
+  upd();
+  if(localStorage.getItem('meo:tarot:sound')==='1'){
+    const resume=()=>{ if(!Sound.isOn()){ Sound.toggle(); upd(); } };
+    addEventListener('pointerdown',resume,{once:true});
+  }
+})();
+
+/* ===== chia sẻ lá đẹp (canvas → ảnh PNG, share hoặc tải về) ===== */
+function shareCard(c){
+  if(!c) return;
+  const W=720,H=1000,s=2,cv=document.createElement('canvas'); cv.width=W*s; cv.height=H*s;
+  const x=cv.getContext('2d'); x.scale(s,s); x.textAlign='center';
+  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,'#1b1238'); g.addColorStop(.55,'#2a1c52'); g.addColorStop(1,'#160f2e');
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  for(let i=0;i<80;i++){ const px=Math.random()*W,py=Math.random()*H,r=Math.random()*1.7+.3; x.globalAlpha=Math.random()*.7+.2; x.fillStyle=Math.random()<.25?'#f0c652':'#fff'; x.beginPath(); x.arc(px,py,r,0,6.28); x.fill(); }
+  x.globalAlpha=1;
+  x.strokeStyle='rgba(240,198,82,.5)'; x.lineWidth=2; x.strokeRect(26,26,W-52,H-52);
+  x.fillStyle='#f0c652'; x.font='700 26px Georgia,serif'; x.fillText('🔮  MÈO TIÊN TRI', W/2, 90);
+  x.font='150px serif'; x.fillText(c.emoji, W/2, 350);
+  const title = c.suit ? (c.rankVi+' '+SUITS[c.suit].short) : (ROMAN[c.n]+' · '+c.name);
+  x.fillStyle='#efe7d0'; x.font='800 46px "Baloo 2",sans-serif'; x.fillText(title, W/2, 455);
+  x.fillStyle='#bdb1d8'; x.font='400 22px Georgia,serif'; x.fillText(c.en||'', W/2, 492);
+  x.fillStyle='#f0c652'; x.font='700 21px "Baloo 2",sans-serif'; x.fillText((c.keys||[]).slice(0,4).join('  ·  '), W/2, 560);
+  // nghĩa (wrap)
+  x.fillStyle='#e7dffb'; x.font='400 25px Georgia,serif';
+  const words=(c.up||'').split(' '); let line='',y=630; const maxW=W-130;
+  for(const w of words){ const test=line?line+' '+w:w; if(x.measureText(test).width>maxW){ x.fillText(line,W/2,y); line=w; y+=38; if(y>900)break; } else line=test; }
+  if(line&&y<=900) x.fillText(line,W/2,y);
+  x.fillStyle='rgba(240,198,82,.85)'; x.font='700 22px "Baloo 2",sans-serif'; x.fillText('tarot.meomoe.com', W/2, H-54);
+  cv.toBlob(b=>{ if(!b)return; const fname='meo-tarot-'+(c.id)+'.png'; const file=new File([b],fname,{type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){ navigator.share({files:[file],title:'Mèo Tiên Tri',text:title+' — tarot.meomoe.com'}).catch(()=>{}); }
+    else { const a=document.createElement('a'); a.download=fname; a.href=URL.createObjectURL(b); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); }
+  },'image/png');
+}
+document.getElementById('m-share').addEventListener('click',()=>{ window.MeoSfx&&window.MeoSfx(); shareCard(byId(current)); });
+
+/* ===== Bạn có biết? — chuyện thú vị về Tarot (theo lịch sử Tarot phổ thông) ===== */
+const TRIVIA=[
+  "Tarot ra đời giữa thế kỷ 15 ở Ý — ban đầu chỉ là bộ bài chơi tên “tarocchi”, mãi về sau mới được dùng để bói. 🎴",
+  "Bộ Rider–Waite–Smith (1909) là bộ đầu tiên vẽ tranh kể chuyện cho cả 56 lá Ẩn Phụ; trước đó Ẩn Phụ chỉ vẽ số lượng biểu tượng như bài tây. 🖼️",
+  "Người vẽ bộ RWS là hoạ sĩ Pamela Colman Smith (“Pixie”) — lâu nay ít được ghi công, nên nay nhiều người gọi là bộ “Waite–Smith” để tôn vinh bà. 🎨",
+  "78 lá = 22 Ẩn Chính + 56 Ẩn Phụ. Ẩn Phụ rất giống bộ bài tây 52 lá, chỉ thêm 4 lá Hầu (Page) cho mỗi chất. 🃏",
+  "4 chất Ẩn Phụ tương ứng bài tây: Gậy ~ Nhép ♣, Cốc ~ Cơ ♥, Kiếm ~ Bích ♠, Tiền ~ Rô ♦. ♠♥♦♣",
+  "Lá Chàng Khờ đánh số 0 — có thể xếp ở đầu hoặc cuối hành trình, hơi giống lá Joker trong bài tây. 🤹",
+  "Dùng Tarot để bói chỉ phổ biến từ cuối thế kỷ 18, gắn với Antoine Court de Gébelin và “Etteilla” ở Pháp. 🔮",
+  "“Arcana” nghĩa là “điều bí ẩn”; cách gọi Major/Minor Arcana (Ẩn Chính/Ẩn Phụ) do giới huyền học thế kỷ 19 đặt ra. ✨",
+  "Bộ Tarot de Marseille là một trong những bộ lâu đời và ảnh hưởng nhất châu Âu, định hình hình ảnh nhiều lá tới tận nay. 🇫🇷",
+  "Hội kín Golden Dawn (cuối thế kỷ 19) gắn Tarot với chiêm tinh, nguyên tố và Cây Sự Sống Kabbalah — nền tảng cách đọc hiện đại. 🌳",
+  "Bộ Thoth của Aleister Crowley & Lady Frieda Harris (thập niên 1940) là một bộ rất nổi tiếng khác, đậm tính biểu tượng. 🦅",
+  "Nhiều người đọc bài hiện đại xem Tarot không phải để “tiên đoán số phận”, mà như tấm gương soi để tự suy ngẫm và ra quyết định. 🪞",
+  "Pamela Colman Smith còn là nghệ sĩ sân khấu — nên mỗi lá RWS được vẽ như một “cảnh kịch” nhỏ đầy biểu tượng có chủ đích. 🎭",
+];
+(function(){
+  const t=document.getElementById('trivia-t'), b=document.getElementById('trivia-next'); if(!t) return;
+  let i=Math.floor((typeof srand==='function'?srand():Math.random())*TRIVIA.length);
+  function show(){ t.textContent=TRIVIA[((i%TRIVIA.length)+TRIVIA.length)%TRIVIA.length]; }
+  show();
+  b.addEventListener('click',()=>{ i+=1+Math.floor((typeof srand==='function'?srand():Math.random())*3); show(); window.MeoSfx&&window.MeoSfx(); });
 })();
 </script>
 </body>
