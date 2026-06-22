@@ -77,18 +77,6 @@ body{font-family:var(--font-body);color:var(--ink);background:var(--bg);-webkit-
 #iosHint.show{display:block}
 #iosHint b{color:var(--mystic)}
 #iosHint .x{position:absolute;top:.25rem;right:.5rem;cursor:var(--wand),pointer;color:var(--ink-faint);font-weight:800}
-/* nút bật/tắt âm thanh */
-.soundtoggle{position:fixed;top:.6rem;right:3.35rem;z-index:950;border:1px solid var(--glass-border);cursor:var(--wand),pointer;
-  background:var(--glass-bg);backdrop-filter:blur(12px) saturate(1.3);-webkit-backdrop-filter:blur(12px) saturate(1.3);
-  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;box-shadow:var(--shadow-sm);transition:transform .18s;font-size:1.05rem}
-.soundtoggle:hover{transform:translateY(-1px)}
-.soundtoggle.is-off{opacity:.5}
-/* Bạn có biết? */
-.trivia{max-width:560px;margin:1.4rem auto 0;background:var(--surface);border:1px dashed var(--mystic-soft);border-radius:var(--radius);padding:1.1rem 1.3rem;box-shadow:var(--shadow-sm);text-align:center}
-.trivia__h{font-family:var(--font-head);font-weight:800;color:var(--mystic);font-size:.92rem;margin-bottom:.45rem}
-.trivia__t{color:var(--ink-soft);line-height:1.6;font-size:.95rem;min-height:3em}
-.trivia__btn{margin-top:.75rem;border:1px solid var(--mystic-soft);background:var(--surface-2);color:var(--mystic);font-family:var(--font-head);font-weight:700;font-size:.8rem;padding:.35rem .9rem;border-radius:999px;cursor:var(--wand),pointer;transition:transform .15s}
-.trivia__btn:hover{transform:translateY(-2px)}
 body::before{content:'';position:fixed;inset:0;z-index:-2;opacity:.85;transition:background .6s;
   background:radial-gradient(60vw 40vw at 12% 8%,var(--bg-1),transparent 60%),radial-gradient(55vw 45vw at 88% 4%,var(--bg-2),transparent 58%),radial-gradient(60vw 55vw at 50% 100%,var(--bg-3),transparent 60%)}
 /* tinh vân xoay lấp lánh — phủ full màn hình, sau nội dung */
@@ -554,6 +542,10 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .bc-open:hover{transform:translateY(-2px);background:var(--surface-2)}
 .bc-note{max-width:560px;margin:1rem auto 0;text-align:center;color:var(--ink-soft);font-size:.82rem;line-height:1.55;background:var(--surface-2);border:1px dashed var(--mystic-soft);border-radius:var(--radius-sm);padding:.7rem .9rem}
 .birth-src{max-width:620px;margin:1rem auto 0;text-align:center;color:var(--ink-faint);font-size:.76rem;line-height:1.6}
+.birth-sub{margin-top:1.6rem}
+.birth-subh{font-family:var(--font-head);font-weight:800;font-size:1.05rem;color:var(--mystic);text-align:center;margin:1.4rem 0 .2rem}
+.birth-subnote{max-width:560px;margin:.2rem auto .4rem;text-align:center;color:var(--ink-soft);font-size:.82rem;line-height:1.55}
+.compat-lb{display:flex;flex-direction:column;gap:.25rem;font-family:var(--font-head);font-weight:700;font-size:.78rem;color:var(--ink-soft);text-align:left}
 
 /* Có/Không — verdict */
 .verdict{text-align:center;background:linear-gradient(135deg,var(--mystic),var(--pink-deep));color:#fff;border-radius:var(--radius);padding:1rem 1.2rem;margin:0 auto 1.1rem;max-width:420px;box-shadow:var(--shadow)}
@@ -654,9 +646,6 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <path d="M24 23 l.4 1 1 .4 -1 .4 -.4 1 -.4 -1 -1 -.4 1 -.4 z" fill="#ffd9ec"/>
 </svg></div>
 
-<!-- nút bật/tắt âm thanh huyền bí -->
-<button class="soundtoggle is-off" id="sound" aria-label="Bật/tắt âm thanh">🔈</button>
-
 <!-- nút đổi giao diện (nổi nhỏ góc phải) -->
 <button class="themetoggle" id="theme" aria-label="Đổi giao diện"><span class="nav__theme-emoji" id="theme-emoji">☀️</span><span id="theme-label">Ngày</span></button>
 
@@ -714,11 +703,6 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   </div>
   <p class="section__lead">Mỗi ngày một lá để <b>chiêm nghiệm</b>. Lá của hôm nay đã cố định — quay lại bao nhiêu lần vẫn là nó, tới nửa đêm mới đổi lá mới.</p>
   <div id="today-card"></div>
-  <div class="trivia">
-    <div class="trivia__h">🔮 Bạn có biết? <span style="color:var(--ink-faint);font-weight:600">· chuyện về Tarot</span></div>
-    <div class="trivia__t" id="trivia-t"></div>
-    <button class="trivia__btn" id="trivia-next">🔄 Điều thú vị khác</button>
-  </div>
 </section>
 
 <!-- LEARN sub-tabs + tìm kiếm -->
@@ -812,7 +796,26 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
     <button class="btn btn--primary btn--sm" id="birth-go">✨ Xem lá của tôi</button>
   </div>
   <div id="birth-result"></div>
-  <p class="birth-src">Phương pháp: <b>Mary K. Greer</b> — <i>Who Are You in the Tarot?</i> (Tarot Birth &amp; Year Cards). Lá Tính Cách = cách bạn thể hiện &amp; được nhìn nhận · Lá Linh Hồn = động lực sâu bên trong · Lá Của Năm = bài học/chủ đề của năm.</p>
+
+  <div id="zodiac-result" class="birth-sub"></div>
+  <div id="pmd-result" class="birth-sub"></div>
+
+  <p class="birth-src">Phương pháp: <b>Mary K. Greer</b> — <i>Who Are You in the Tarot? / Tarot for Your Self</i> (Lá Bản Mệnh · Năm · Tháng · Ngày) · <b>hệ tương ứng Golden Dawn</b> (cung hoàng đạo ↔ Tarot &amp; decan). Lá Tính Cách = cách bạn thể hiện · Lá Linh Hồn = động lực bên trong · Lá Của Năm/Tháng/Ngày = chủ đề từng giai đoạn.</p>
+</section>
+
+<section id="compat" class="section" data-view="topics">
+  <div class="section-title">
+    <span class="section-title__kicker">💞 ghép đôi</span>
+    <h2 class="section-title__heading">Tương hợp đôi (Lá Bản Mệnh)</h2>
+  </div>
+  <p class="section__lead">Nhập <b>2 ngày sinh</b> → so <b>Lá Linh Hồn</b> của hai người để xem độ "đồng điệu" (theo cách Mary K. Greer bàn về sự cộng hưởng giữa các Lá Bản Mệnh).</p>
+  <div class="birth-form">
+    <label class="compat-lb">Bạn <input type="date" id="compat-a" class="birth-input" aria-label="Ngày sinh người 1"></label>
+    <label class="compat-lb">Người ấy <input type="date" id="compat-b" class="birth-input" aria-label="Ngày sinh người 2"></label>
+    <button class="btn btn--primary btn--sm" id="compat-go">💞 Xem độ hợp</button>
+  </div>
+  <div id="compat-result"></div>
+  <p class="birth-src">Tương hợp dựa trên Lá Bản Mệnh là cách đọc mang tính tham khảo &amp; gợi mở — không phải phán xét đúng/sai về một mối quan hệ nha.</p>
 </section>
 
 <section id="topics" class="section" data-view="topics">
@@ -913,7 +916,6 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
         <div class="lesson__actions">
           <button class="btn btn--primary btn--sm" id="m-learn">📖 Đánh dấu đã học</button>
           <button class="btn btn--ghost btn--sm" id="m-review">🃏 Ôn lá này</button>
-          <button class="btn btn--soft btn--sm" id="m-share">📤 Chia sẻ</button>
         </div>
         <div class="lesson__nav">
           <button class="lesson__navbtn" id="m-prev"><small>← Lá trước</small><b id="m-prev-name"></b></button>
@@ -1799,7 +1801,7 @@ const modal=document.getElementById('modal');
 let current=0;
 function groupOf(c){ return c.suit ? MINOR.filter(x=>x.suit===c.suit) : CARDS; }
 function openLesson(id){
-  current=id; const c=byId(id); window.MeoSfx&&window.MeoSfx();
+  current=id; const c=byId(id);
   document.getElementById('m-card').innerHTML=`<div class="tcard${c.suit?(' tcard--'+c.suit):''}">${tileInner(c,false)}</div><img class="lesson__peek" src="tarot_sq.png" alt="Mèo Tiên Tri">`;
   if(c.suit){
     document.getElementById('m-chapter').textContent=`Ẩn Phụ · ${c.suitVi} · ${c.el}`;
@@ -2098,7 +2100,6 @@ function renderSpreadGuide(){
 function drawSpread(){
   const sp=curSp();
   draws=shuffle(ALL.map(c=>c.id)).slice(0,sp.pos.length).map(id=>({id,rev:srand()<0.5}));
-  window.MeoSfx&&window.MeoSfx();
   renderSpreadResult();
 }
 function posCardHTML(sp,i){
@@ -2588,9 +2589,64 @@ applyViews();
       <div class="bc-mean">${t[1]}</div>
       <button class="bc-open" data-id="${card.id}">📖 Xem bài học</button></div>`;
   }
+  function miniCard(role,card,mean){
+    return `<div class="birth-card"><div class="tcard${card.suit?(' tcard--'+card.suit):''}">${tileInner(card,false)}</div>
+      <div class="bc-role">${role}</div>
+      <div class="bc-name">${card.suit?card.name:ROMAN[card.n]+' · '+card.name}</div>
+      <div class="bc-keys">${(card.keys||[]).slice(0,3).map(k=>`<span>${k}</span>`).join('')}</div>
+      ${mean?`<div class="bc-mean">${mean}</div>`:''}
+      <button class="bc-open" data-id="${card.id}">📖 Xem bài học</button></div>`;
+  }
+  function wireOpen(box){ box.querySelectorAll('.bc-open').forEach(b=>b.addEventListener('click',()=>openLesson(coerceId(b.dataset.id)))); }
+
+  /* ===== A. Cung hoàng đạo ↔ Tarot (hệ Golden Dawn) ===== */
+  const SIGNS=[
+    {vi:'Ma Kết',em:'♑',el:'Đất',planet:'Thổ Tinh',f:[12,22],t:[1,19]},
+    {vi:'Bảo Bình',em:'♒',el:'Khí',planet:'Thổ Tinh · Thiên Vương',f:[1,20],t:[2,18]},
+    {vi:'Song Ngư',em:'♓',el:'Nước',planet:'Mộc Tinh · Hải Vương',f:[2,19],t:[3,20]},
+    {vi:'Bạch Dương',em:'♈',el:'Lửa',planet:'Hoả Tinh',f:[3,21],t:[4,19]},
+    {vi:'Kim Ngưu',em:'♉',el:'Đất',planet:'Kim Tinh',f:[4,20],t:[5,20]},
+    {vi:'Song Tử',em:'♊',el:'Khí',planet:'Thuỷ Tinh',f:[5,21],t:[6,20]},
+    {vi:'Cự Giải',em:'♋',el:'Nước',planet:'Mặt Trăng',f:[6,21],t:[7,22]},
+    {vi:'Sư Tử',em:'♌',el:'Lửa',planet:'Mặt Trời',f:[7,23],t:[8,22]},
+    {vi:'Xử Nữ',em:'♍',el:'Đất',planet:'Thuỷ Tinh',f:[8,23],t:[9,22]},
+    {vi:'Thiên Bình',em:'♎',el:'Khí',planet:'Kim Tinh',f:[9,23],t:[10,22]},
+    {vi:'Bọ Cạp',em:'♏',el:'Nước',planet:'Hoả Tinh · Diêm Vương',f:[10,23],t:[11,21]},
+    {vi:'Nhân Mã',em:'♐',el:'Lửa',planet:'Mộc Tinh',f:[11,22],t:[12,21]},
+  ];
+  const ELEM_EM={'Lửa':'🔥','Đất':'🪙','Khí':'🗡️','Nước':'💧'};
+  function signOf(m,d){ for(const s of SIGNS){ if((m===s.f[0]&&d>=s.f[1])||(m===s.t[0]&&d<=s.t[1])) return s; } return SIGNS[0]; }
+  function renderZodiac(m,d){
+    const box=document.getElementById('zodiac-result'); if(!box) return;
+    const s=signOf(m,d);
+    const major=CARDS.find(c=>!c.suit && c.el===s.vi);
+    const decans=MINOR.filter(c=>{ const x=DECAN[c.id]; return x && x.indexOf(s.vi)>=0; });
+    let html=`<h3 class="birth-subh">🔭 Cung hoàng đạo: ${s.em} ${s.vi}</h3>
+      <p class="birth-subnote">Nguyên tố <b>${ELEM_EM[s.el]||''} ${s.el}</b> · Hành tinh cai quản <b>${s.planet}</b>. Theo hệ Golden Dawn, mỗi cung ứng một lá Ẩn Chính; 30° của cung chia 3 decan ứng 3 lá Ẩn Phụ.</p>
+      <div class="birth-cards">`;
+    if(major) html+=miniCard('♛ Lá cai quản cung',major,'');
+    decans.forEach((c,i)=>{ html+=miniCard('Decan '+(i+1)+' · '+(i*10)+'–'+(i*10+10)+'°',c,''); });
+    box.innerHTML=html+`</div>`;
+    wireOpen(box);
+  }
+  /* ===== B. Lá Của Tháng & Ngày (Greer — phân tầng) ===== */
+  function renderPMD(m,d){
+    const box=document.getElementById('pmd-result'); if(!box) return;
+    const now=new Date(), cM=now.getMonth()+1, cD=now.getDate();
+    const yearNum=redMajor(m+d+YEAR), monNum=redMajor(yearNum+cM), dayNum=redMajor(monNum+cD);
+    const mc=cardOf(monNum), dc=cardOf(dayNum);
+    box.innerHTML=`<h3 class="birth-subh">📅 Lá của riêng bạn — tháng ${cM} &amp; hôm nay ${cD}/${cM}</h3>
+      <p class="birth-subnote">Tính phân tầng từ ngày sinh: số Năm cá nhân + số tháng ⟶ <b>Lá Của Tháng</b>; rồi + số ngày ⟶ <b>Lá Của Ngày</b>.</p>
+      <div class="birth-cards">
+        ${miniCard('🗓️ Lá Của Tháng',mc,'Chủ đề năng lượng cho bạn trong tháng này.')}
+        ${miniCard('☀️ Lá Của Ngày',dc,'Tinh thần dành riêng cho bạn hôm nay.')}
+      </div>`;
+    wireOpen(box);
+  }
   function run(){
     const v=dateEl.value;
-    if(!v){ outEl.innerHTML=`<p class="bc-note">Chọn ngày sinh rồi bấm “Xem lá của tôi” nha 🌙</p>`; return; }
+    if(!v){ outEl.innerHTML=`<p class="bc-note">Chọn ngày sinh rồi bấm “Xem lá của tôi” nha 🌙</p>`;
+      ['zodiac-result','pmd-result'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='';}); return; }
     const [Y,M,D]=v.split('-').map(Number);
     let pers=M+D+Y; while(pers>22) pers=dsum(pers);
     let soul=pers; if(pers>=10){ soul=dsum(pers); if(soul>9) soul=dsum(soul); }
@@ -2602,11 +2658,42 @@ applyViews();
     if(soul===pers) html+=`<p class="bc-note">Lá Tính Cách &amp; Lá Linh Hồn của bạn <b>trùng nhau</b> (${ROMAN[pc.n]} · ${pc.name}) — con người bên ngoài và bên trong khá hợp nhất ✨</p>`;
     outEl.innerHTML=html;
     localStorage.setItem('meo:tarot:birth',v);
-    outEl.querySelectorAll('.bc-open').forEach(b=>b.addEventListener('click',()=>openLesson(coerceId(b.dataset.id))));
+    wireOpen(outEl);
+    renderZodiac(M,D); renderPMD(M,D);
   }
   goEl.addEventListener('click',run);
   dateEl.addEventListener('change',run);
   if(saved) run();
+})();
+
+/* ===== C. Tương hợp đôi (theo Lá Bản Mệnh — Mary K. Greer) ===== */
+(function(){
+  const aEl=document.getElementById('compat-a'), bEl=document.getElementById('compat-b'),
+        goEl=document.getElementById('compat-go'), out=document.getElementById('compat-result');
+  if(!aEl) return;
+  const dsum=n=>String(n).split('').reduce((a,d)=>a+(+d),0);
+  const cardOf=v=>CARDS.find(c=>c.n===(v===22?0:v));
+  function birthOf(v){ const [Y,M,D]=v.split('-').map(Number); let p=M+D+Y; while(p>22)p=dsum(p);
+    let s=p; if(p>=10){ s=dsum(p); if(s>9)s=dsum(s); } return {soulN:s, soul:cardOf(s)}; }
+  const sa=localStorage.getItem('meo:tarot:birth'); if(sa) aEl.value=sa;
+  function mini(label,card){ return `<div class="birth-card"><div class="tcard">${tileInner(card,false)}</div>
+    <div class="bc-role">${label}</div><div class="bc-name">${ROMAN[card.n]} · ${card.name}</div>
+    <div class="bc-keys">${card.keys.slice(0,3).map(k=>`<span>${k}</span>`).join('')}</div>
+    <button class="bc-open" data-id="${card.id}">📖 Xem bài học</button></div>`; }
+  function run(){
+    const va=aEl.value, vb=bEl.value;
+    if(!va||!vb){ out.innerHTML=`<p class="bc-note">Nhập đủ 2 ngày sinh rồi bấm “Xem độ hợp” nha 💞</p>`; return; }
+    const A=birthOf(va), B=birthOf(vb), same=A.soulN===B.soulN;
+    const verdict = same ? 'Tri kỷ — cùng Lá Linh Hồn ✨' : 'Hai mảnh ghép bổ sung nhau 🌗';
+    const note = same
+      ? `Cả hai cùng Lá Linh Hồn <b>${A.soul.name}</b> — chung một động lực cốt lõi, rất dễ thấu hiểu và đồng điệu. Theo Greer, người cùng Lá Linh Hồn thuộc cùng một “chòm” nguyên mẫu, có sợi dây kết nối tự nhiên.`
+      : `Linh Hồn của bạn là <b>${A.soul.name}</b> (${(A.soul.keys[0]||'').toLowerCase()}), của người ấy là <b>${B.soul.name}</b> (${(B.soul.keys[0]||'').toLowerCase()}). Hai chất khác nhau — mỗi người một thế mạnh, bổ khuyết và học hỏi được nhiều từ nhau khi biết lắng nghe.`;
+    out.innerHTML=`<div class="verdict"><div class="verdict__big">${verdict}</div></div>
+      <div class="birth-cards">${mini('🔆 Linh Hồn — Bạn',A.soul)}${mini('🔆 Linh Hồn — Người ấy',B.soul)}</div>
+      <p class="bc-note">${note}</p>`;
+    out.querySelectorAll('.bc-open').forEach(b=>b.addEventListener('click',()=>openLesson(coerceId(b.dataset.id))));
+  }
+  goEl.addEventListener('click',run); aEl.addEventListener('change',run); bEl.addEventListener('change',run);
 })();
 
 /* ===== tinh vân xoay lấp lánh — phủ full màn hình (PC · tablet · mobile) ===== */
@@ -2699,94 +2786,6 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
   });
   document.getElementById('iosHintX').addEventListener('click',()=>hint.classList.remove('show'));
   addEventListener('appinstalled', ()=>{ btn.classList.remove('show'); hint.classList.remove('show'); });
-})();
-
-/* ===== âm thanh huyền bí (Web Audio, tự tạo — chạy offline) ===== */
-const Sound=(function(){
-  let ctx,master,started=false,on=false;
-  function init(){ if(ctx)return; const AC=window.AudioContext||window.webkitAudioContext; if(!AC)return;
-    ctx=new AC(); master=ctx.createGain(); master.gain.value=0; master.connect(ctx.destination); }
-  function startAmbient(){ if(started||!ctx)return; started=true;
-    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=650; lp.connect(master);
-    [110,164.81,220].forEach((f,i)=>{ const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f;
-      const g=ctx.createGain(); g.gain.value=0.12/(i+1); o.connect(g); g.connect(lp);
-      const lfo=ctx.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.05+i*0.03;
-      const lg=ctx.createGain(); lg.gain.value=0.04; lfo.connect(lg); lg.connect(g.gain); lfo.start(); o.start(); }); }
-  function setOn(v){ on=v;
-    if(on){ init(); if(!ctx)return; if(ctx.state==='suspended')ctx.resume(); startAmbient(); master.gain.setTargetAtTime(0.16,ctx.currentTime,1.4); }
-    else if(ctx){ master.gain.setTargetAtTime(0,ctx.currentTime,0.4); }
-    try{localStorage.setItem('meo:tarot:sound',on?'1':'0');}catch(e){} }
-  return {
-    toggle(){ setOn(!on); return on; }, isOn(){ return on; },
-    chime(){ if(!on||!ctx)return; const t=ctx.currentTime;
-      [784,1175,1568].forEach((f,i)=>{ const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f;
-        const g=ctx.createGain(); g.gain.setValueAtTime(0,t+i*0.05); g.gain.linearRampToValueAtTime(0.14/(i+1),t+i*0.05+0.02);
-        g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.05+0.9); o.connect(g); g.connect(master); o.start(t+i*0.05); o.stop(t+i*0.05+0.95); }); }
-  };
-})();
-window.MeoSfx=()=>{ try{Sound.chime();}catch(e){} };
-(function(){
-  const b=document.getElementById('sound'); if(!b) return;
-  function upd(){ b.textContent=Sound.isOn()?'🔊':'🔈'; b.classList.toggle('is-off',!Sound.isOn()); }
-  b.addEventListener('click',()=>{ Sound.toggle(); upd(); });
-  upd();
-  if(localStorage.getItem('meo:tarot:sound')==='1'){
-    const resume=()=>{ if(!Sound.isOn()){ Sound.toggle(); upd(); } };
-    addEventListener('pointerdown',resume,{once:true});
-  }
-})();
-
-/* ===== chia sẻ lá đẹp (canvas → ảnh PNG, share hoặc tải về) ===== */
-function shareCard(c){
-  if(!c) return;
-  const W=720,H=1000,s=2,cv=document.createElement('canvas'); cv.width=W*s; cv.height=H*s;
-  const x=cv.getContext('2d'); x.scale(s,s); x.textAlign='center';
-  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,'#1b1238'); g.addColorStop(.55,'#2a1c52'); g.addColorStop(1,'#160f2e');
-  x.fillStyle=g; x.fillRect(0,0,W,H);
-  for(let i=0;i<80;i++){ const px=Math.random()*W,py=Math.random()*H,r=Math.random()*1.7+.3; x.globalAlpha=Math.random()*.7+.2; x.fillStyle=Math.random()<.25?'#f0c652':'#fff'; x.beginPath(); x.arc(px,py,r,0,6.28); x.fill(); }
-  x.globalAlpha=1;
-  x.strokeStyle='rgba(240,198,82,.5)'; x.lineWidth=2; x.strokeRect(26,26,W-52,H-52);
-  x.fillStyle='#f0c652'; x.font='700 26px Georgia,serif'; x.fillText('🔮  MÈO TIÊN TRI', W/2, 90);
-  x.font='150px serif'; x.fillText(c.emoji, W/2, 350);
-  const title = c.suit ? (c.rankVi+' '+SUITS[c.suit].short) : (ROMAN[c.n]+' · '+c.name);
-  x.fillStyle='#efe7d0'; x.font='800 46px "Baloo 2",sans-serif'; x.fillText(title, W/2, 455);
-  x.fillStyle='#bdb1d8'; x.font='400 22px Georgia,serif'; x.fillText(c.en||'', W/2, 492);
-  x.fillStyle='#f0c652'; x.font='700 21px "Baloo 2",sans-serif'; x.fillText((c.keys||[]).slice(0,4).join('  ·  '), W/2, 560);
-  // nghĩa (wrap)
-  x.fillStyle='#e7dffb'; x.font='400 25px Georgia,serif';
-  const words=(c.up||'').split(' '); let line='',y=630; const maxW=W-130;
-  for(const w of words){ const test=line?line+' '+w:w; if(x.measureText(test).width>maxW){ x.fillText(line,W/2,y); line=w; y+=38; if(y>900)break; } else line=test; }
-  if(line&&y<=900) x.fillText(line,W/2,y);
-  x.fillStyle='rgba(240,198,82,.85)'; x.font='700 22px "Baloo 2",sans-serif'; x.fillText('tarot.meomoe.com', W/2, H-54);
-  cv.toBlob(b=>{ if(!b)return; const fname='meo-tarot-'+(c.id)+'.png'; const file=new File([b],fname,{type:'image/png'});
-    if(navigator.canShare && navigator.canShare({files:[file]})){ navigator.share({files:[file],title:'Mèo Tiên Tri',text:title+' — tarot.meomoe.com'}).catch(()=>{}); }
-    else { const a=document.createElement('a'); a.download=fname; a.href=URL.createObjectURL(b); document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); }
-  },'image/png');
-}
-document.getElementById('m-share').addEventListener('click',()=>{ window.MeoSfx&&window.MeoSfx(); shareCard(byId(current)); });
-
-/* ===== Bạn có biết? — chuyện thú vị về Tarot (theo lịch sử Tarot phổ thông) ===== */
-const TRIVIA=[
-  "Tarot ra đời giữa thế kỷ 15 ở Ý — ban đầu chỉ là bộ bài chơi tên “tarocchi”, mãi về sau mới được dùng để bói. 🎴",
-  "Bộ Rider–Waite–Smith (1909) là bộ đầu tiên vẽ tranh kể chuyện cho cả 56 lá Ẩn Phụ; trước đó Ẩn Phụ chỉ vẽ số lượng biểu tượng như bài tây. 🖼️",
-  "Người vẽ bộ RWS là hoạ sĩ Pamela Colman Smith (“Pixie”) — lâu nay ít được ghi công, nên nay nhiều người gọi là bộ “Waite–Smith” để tôn vinh bà. 🎨",
-  "78 lá = 22 Ẩn Chính + 56 Ẩn Phụ. Ẩn Phụ rất giống bộ bài tây 52 lá, chỉ thêm 4 lá Hầu (Page) cho mỗi chất. 🃏",
-  "4 chất Ẩn Phụ tương ứng bài tây: Gậy ~ Nhép ♣, Cốc ~ Cơ ♥, Kiếm ~ Bích ♠, Tiền ~ Rô ♦. ♠♥♦♣",
-  "Lá Chàng Khờ đánh số 0 — có thể xếp ở đầu hoặc cuối hành trình, hơi giống lá Joker trong bài tây. 🤹",
-  "Dùng Tarot để bói chỉ phổ biến từ cuối thế kỷ 18, gắn với Antoine Court de Gébelin và “Etteilla” ở Pháp. 🔮",
-  "“Arcana” nghĩa là “điều bí ẩn”; cách gọi Major/Minor Arcana (Ẩn Chính/Ẩn Phụ) do giới huyền học thế kỷ 19 đặt ra. ✨",
-  "Bộ Tarot de Marseille là một trong những bộ lâu đời và ảnh hưởng nhất châu Âu, định hình hình ảnh nhiều lá tới tận nay. 🇫🇷",
-  "Hội kín Golden Dawn (cuối thế kỷ 19) gắn Tarot với chiêm tinh, nguyên tố và Cây Sự Sống Kabbalah — nền tảng cách đọc hiện đại. 🌳",
-  "Bộ Thoth của Aleister Crowley & Lady Frieda Harris (thập niên 1940) là một bộ rất nổi tiếng khác, đậm tính biểu tượng. 🦅",
-  "Nhiều người đọc bài hiện đại xem Tarot không phải để “tiên đoán số phận”, mà như tấm gương soi để tự suy ngẫm và ra quyết định. 🪞",
-  "Pamela Colman Smith còn là nghệ sĩ sân khấu — nên mỗi lá RWS được vẽ như một “cảnh kịch” nhỏ đầy biểu tượng có chủ đích. 🎭",
-];
-(function(){
-  const t=document.getElementById('trivia-t'), b=document.getElementById('trivia-next'); if(!t) return;
-  let i=Math.floor((typeof srand==='function'?srand():Math.random())*TRIVIA.length);
-  function show(){ t.textContent=TRIVIA[((i%TRIVIA.length)+TRIVIA.length)%TRIVIA.length]; }
-  show();
-  b.addEventListener('click',()=>{ i+=1+Math.floor((typeof srand==='function'?srand():Math.random())*3); show(); window.MeoSfx&&window.MeoSfx(); });
 })();
 </script>
 </body>
