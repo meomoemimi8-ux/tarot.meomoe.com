@@ -64,6 +64,19 @@ body{font-family:var(--font-body);color:var(--ink);background:var(--bg);-webkit-
 .themetoggle:hover{transform:translateY(-1px) rotate(-8deg)}
 .themetoggle #theme-label{display:none}
 .themetoggle .nav__theme-emoji{font-size:1.25rem;line-height:1}
+/* nút cài ứng dụng (PWA) */
+#installbtn{position:fixed;right:.8rem;bottom:84px;z-index:951;display:none;align-items:center;gap:.35rem;
+  border:none;cursor:var(--wand),pointer;font-family:var(--font-head);font-weight:800;font-size:.84rem;color:#fff;
+  background:linear-gradient(135deg,var(--mystic),var(--pink-deep));padding:.58rem 1rem;border-radius:999px;
+  box-shadow:var(--shadow);animation:instPulse 2.6s ease-in-out infinite}
+#installbtn.show{display:inline-flex}
+@keyframes instPulse{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+#iosHint{position:fixed;right:.8rem;bottom:134px;z-index:951;max-width:262px;display:none;
+  background:var(--surface);color:var(--ink);border:1px solid var(--border-soft);border-radius:var(--radius-sm);
+  box-shadow:var(--shadow);padding:.8rem 1rem .8rem .9rem;font-size:.85rem;line-height:1.55}
+#iosHint.show{display:block}
+#iosHint b{color:var(--mystic)}
+#iosHint .x{position:absolute;top:.25rem;right:.5rem;cursor:var(--wand),pointer;color:var(--ink-faint);font-weight:800}
 body::before{content:'';position:fixed;inset:0;z-index:-2;opacity:.85;transition:background .6s;
   background:radial-gradient(60vw 40vw at 12% 8%,var(--bg-1),transparent 60%),radial-gradient(55vw 45vw at 88% 4%,var(--bg-2),transparent 58%),radial-gradient(60vw 55vw at 50% 100%,var(--bg-3),transparent 60%)}
 /* tinh vân xoay lấp lánh — phủ full màn hình, sau nội dung */
@@ -631,6 +644,10 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 
 <!-- nút đổi giao diện (nổi nhỏ góc phải) -->
 <button class="themetoggle" id="theme" aria-label="Đổi giao diện"><span class="nav__theme-emoji" id="theme-emoji">☀️</span><span id="theme-label">Ngày</span></button>
+
+<!-- nút cài app (PWA) -->
+<button id="installbtn" aria-label="Cài ứng dụng">📲 Cài ứng dụng</button>
+<div id="iosHint" role="dialog" aria-label="Hướng dẫn cài trên iPhone"><span class="x" id="iosHintX" role="button" aria-label="Đóng">✕</span>📲 <b>Cài lên iPhone/iPad:</b> bấm nút <b>Chia sẻ</b> ⬆️ ở thanh Safari → kéo xuống chọn <b>"Thêm vào MH chính"</b> (Add to Home Screen). Vậy là có icon Mèo Tiên Tri như app thật! 🐾</div>
 
 <!-- BOTTOM TAB BAR -->
 <nav class="tabbar" id="tabbar" aria-label="Điều hướng chính">
@@ -2640,6 +2657,26 @@ if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
   addEventListener('pointermove',e=>{ if(e.pointerType==='touch')return; x=e.clientX; y=e.clientY; if(!raf)raf=requestAnimationFrame(tick); },{passive:true});
   document.addEventListener('mouseleave',()=>{ el.style.opacity='0'; });
   document.addEventListener('mouseenter',()=>{ el.style.opacity='1'; });
+})();
+
+/* ===== nút cài ứng dụng (PWA: Android/Chrome cài thẳng · iPhone hướng dẫn) ===== */
+(function(){
+  const btn=document.getElementById('installbtn'), hint=document.getElementById('iosHint');
+  if(!btn) return;
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+  if(standalone) return;                       // đã cài rồi → không hiện nút
+  let deferred=null, mode='';
+  addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferred=e; mode='auto'; btn.classList.add('show'); });
+  const ua=navigator.userAgent||'';
+  if(/iPhone|iPad|iPod/.test(ua)){ mode='ios'; btn.classList.add('show'); }   // iOS không có beforeinstallprompt
+  btn.addEventListener('click', async ()=>{
+    if(mode!=='auto' || !deferred){ hint.classList.toggle('show'); return; }  // iOS / chưa sẵn → hiện hướng dẫn
+    deferred.prompt();
+    try{ const r=await deferred.userChoice; if(r&&r.outcome==='accepted') btn.classList.remove('show'); }catch(_){}
+    deferred=null;
+  });
+  document.getElementById('iosHintX').addEventListener('click',()=>hint.classList.remove('show'));
+  addEventListener('appinstalled', ()=>{ btn.classList.remove('show'); hint.classList.remove('show'); });
 })();
 </script>
 </body>
