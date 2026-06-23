@@ -565,6 +565,10 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .ai-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
 .ai-hint{font-size:.74rem;color:var(--ink-faint);margin-top:.55rem;line-height:1.55}
 .ai-hint a{color:var(--mystic);font-weight:700}
+.ai-adv{margin-top:.6rem}
+.ai-adv>summary{cursor:var(--wand),pointer;font-size:.78rem;color:var(--mystic);font-weight:700;list-style:none}
+.ai-adv>summary::-webkit-details-marker{display:none}
+.ai-adv .ai-key{margin-top:.55rem}
 .ai-out{margin-top:.9rem;background:var(--surface-2);border:1px dashed var(--mystic-soft);border-radius:var(--radius-sm);padding:.9rem 1rem;font-size:.93rem;line-height:1.7;color:var(--ink);display:none}
 .ai-out.show{display:block}
 .ai-out h4{font-family:var(--font-head);color:var(--mystic);margin:.7rem 0 .2rem;font-size:.98rem}
@@ -866,12 +870,14 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <details class="howto"><summary>📖 Cách đọc &amp; liên kết nhiều lá (mẹo từ sách)</summary><div id="howto-body"></div></details>
 
   <div class="ai-read" id="ai-read">
-    <h3>🤖 Nhờ Mèo AI đọc bài <span class="ai-tag">tuỳ chọn</span></h3>
-    <p class="ai-lead">Rút một trải bài ở trên, nhập câu hỏi → AI sẽ đọc giúp bạn như một reader thực thụ (đọc cả lá xuôi/ngược, nối các lá). Cần một <b>API key Gemini miễn phí</b> — chỉ lưu trên máy bạn, không gửi đi đâu khác.</p>
+    <h3>🤖 Nhờ Mèo AI đọc bài <span class="ai-tag">AI</span></h3>
+    <p class="ai-lead">Rút một trải bài ở trên, nhập câu hỏi → AI đọc giúp bạn như một reader thực thụ (đọc cả lá xuôi/ngược, nối các lá, trả lời câu hỏi). Khi chủ web bật "cầu nối" thì <b>dùng free không cần key</b>; hoặc bạn tự dùng key Gemini ở phần Nâng cao.</p>
     <textarea class="ai-q" id="ai-q" placeholder="Câu hỏi của bạn (vd: Chuyện tình cảm sắp tới của mình thế nào?) — để trống cũng được"></textarea>
-    <input type="password" class="ai-key" id="ai-key" placeholder="Dán API key Gemini vào đây (lưu trên máy)" autocomplete="off" spellcheck="false">
     <div class="ai-row"><button class="btn btn--primary btn--sm" id="ai-go">✨ Nhờ Mèo AI đọc</button></div>
-    <p class="ai-hint">🔑 Lấy key miễn phí ở <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> → bấm <b>Create API key</b> rồi dán vào ô trên. Key chỉ nằm trong trình duyệt của bạn — Mèo không thấy &amp; chỉ gửi tới Google khi bạn bấm đọc.</p>
+    <details class="ai-adv"><summary>⚙️ Nâng cao: dùng API key Gemini riêng (chất lượng cao hơn)</summary>
+      <input type="password" class="ai-key" id="ai-key" placeholder="Dán API key Gemini (tuỳ chọn — lưu trên máy)" autocomplete="off" spellcheck="false">
+      <p class="ai-hint">Có key thì Mèo sẽ đọc bằng <b>Gemini</b> (mượt &amp; sâu hơn). Lấy free ở <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> → <b>Create API key</b>. Bỏ trống cũng được — Mèo tự dùng AI miễn phí. Key chỉ lưu trong máy bạn.</p>
+    </details>
     <div class="ai-out" id="ai-out"></div>
   </div>
 
@@ -2743,25 +2749,38 @@ applyViews();
     const usr=`Kiểu trải bài: ${sp.title}.\nCâu hỏi của người xem: ${q||'(không có câu hỏi cụ thể — hãy đọc tổng quát về giai đoạn này)'}\n\nCác lá đã rút:\n${lines}\n\nHãy đọc trải bài này giúp bạn ấy.`;
     return {sys,usr};
   }
+  async function callGemini(key,sys,usr){
+    const url='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+encodeURIComponent(key);
+    const res=await fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ system_instruction:{parts:[{text:sys}]}, contents:[{role:'user',parts:[{text:usr}]}], generationConfig:{temperature:0.9} }) });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error((data&&data.error&&data.error.message)||('Gemini trả lỗi '+res.status));
+    return ((((data.candidates||[])[0]||{}).content||{}).parts||[]).map(p=>p.text||'').join('').trim();
+  }
+  // Chủ web dán URL Cloudflare Worker (cầu nối) vào đây để bật AI MIỄN PHÍ cho mọi người (không cần key):
+  const PROXY_URL = '';
+  async function callProxy(sys,usr){
+    const res=await fetch(PROXY_URL,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sys,usr}) });
+    const d=await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(d.error||('Cầu nối AI lỗi '+res.status));
+    return (d.text||'').trim();
+  }
   goEl.addEventListener('click', async ()=>{
     if(!draws||!draws.length){ out.className='ai-out show'; out.innerHTML='🐱 Bạn rút một trải bài ở trên trước đã nha!'; return; }
-    const key=(keyEl.value||'').trim();
-    if(!key){ out.className='ai-out show'; out.innerHTML='🔑 Bạn cần dán API key Gemini (miễn phí) vào ô trên — lấy ở link ngay bên dưới nút nha.'; return; }
-    localStorage.setItem('meo:tarot:aikey',key);
+    const key=(keyEl.value||'').trim(); if(key) localStorage.setItem('meo:tarot:aikey',key);
+    if(!key && !PROXY_URL){ out.className='ai-out show';
+      out.innerHTML='✨ Tính năng AI đang chờ chủ web bật "cầu nối" miễn phí. Trong lúc đó, bạn mở <b>⚙️ Nâng cao</b> và dán API key Gemini (miễn phí) để đọc ngay nha.'; return; }
     const {sys,usr}=buildPrompt();
     out.className='ai-out show'; out.innerHTML='<span class="ai-spin">🔮</span> Mèo đang chiêm nghiệm trải bài của bạn…';
     goEl.disabled=true;
+    const via=key?'Gemini':'AI miễn phí';
     try{
-      const url='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+encodeURIComponent(key);
-      const res=await fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({ system_instruction:{parts:[{text:sys}]}, contents:[{role:'user',parts:[{text:usr}]}], generationConfig:{temperature:0.9} }) });
-      const data=await res.json().catch(()=>({}));
-      if(!res.ok){ throw new Error((data&&data.error&&data.error.message)||('Máy chủ trả lỗi '+res.status)); }
-      const cand=(data.candidates||[])[0]||{};
-      const txt=((cand.content||{}).parts||[]).map(p=>p.text||'').join('').trim();
-      out.innerHTML = txt ? fmt(txt)+'<p style="margin-top:.8rem;font-size:.72rem;color:var(--ink-faint)">🤖 Bài đọc do AI (Gemini) tạo — mang tính tham khảo &amp; gợi mở.</p>'
-                          : '🐱 AI chưa trả lời được (có thể do bộ lọc nội dung). Thử đổi câu hỏi rồi đọc lại nha.';
-    }catch(e){ out.innerHTML='😿 Chưa đọc được: '+esc(e.message||e)+'<br><small>Kiểm tra lại API key, kết nối mạng, hoặc thử lại sau nha.</small>'; }
+      const txt = key ? await callGemini(key,sys,usr) : await callProxy(sys,usr);
+      out.innerHTML = txt ? fmt(txt)+'<p style="margin-top:.8rem;font-size:.72rem;color:var(--ink-faint)">🤖 Bài đọc do '+via+' tạo — mang tính tham khảo &amp; gợi mở.</p>'
+                          : '🐱 AI chưa trả lời được, thử đổi câu hỏi rồi đọc lại nha.';
+    }catch(e){
+      out.innerHTML='😿 Chưa đọc được: '+esc(e.message||e)+'<br><small>Thử lại sau ít phút, hoặc dùng key Gemini ở phần "⚙️ Nâng cao" nha.</small>';
+    }
     goEl.disabled=false;
   });
 })();
