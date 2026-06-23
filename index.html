@@ -554,6 +554,23 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .sp-save{text-align:center;margin-top:1.1rem}
 .sp-saved{display:inline-block;margin-left:.6rem;color:var(--mystic);font-weight:700;font-size:.85rem}
 /* Nhật ký Tarot */
+/* Nhờ AI đọc bài */
+.ai-read{max-width:680px;margin:1.8rem auto 0;background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:1.1rem 1.2rem;box-shadow:var(--shadow-sm)}
+.ai-read h3{font-family:var(--font-head);font-size:1.05rem;color:var(--mystic);display:flex;align-items:center;gap:.45rem}
+.ai-tag{font-size:.62rem;font-weight:800;color:#fff;background:var(--mystic-soft);padding:.08rem .5rem;border-radius:999px}
+.ai-lead{font-size:.84rem;color:var(--ink-soft);margin:.35rem 0 .8rem;line-height:1.55}
+.ai-q{width:100%;box-sizing:border-box;background:var(--surface-2);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:.6rem .8rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);resize:vertical;min-height:46px;margin-bottom:.5rem}
+.ai-key{width:100%;box-sizing:border-box;background:var(--surface-2);border:1px solid var(--border-soft);border-radius:999px;padding:.52rem .9rem;font-family:var(--font-body);font-size:.84rem;color:var(--ink);margin-bottom:.55rem}
+.ai-q:focus,.ai-key:focus{outline:2px solid var(--mystic);border-color:var(--mystic)}
+.ai-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.ai-hint{font-size:.74rem;color:var(--ink-faint);margin-top:.55rem;line-height:1.55}
+.ai-hint a{color:var(--mystic);font-weight:700}
+.ai-out{margin-top:.9rem;background:var(--surface-2);border:1px dashed var(--mystic-soft);border-radius:var(--radius-sm);padding:.9rem 1rem;font-size:.93rem;line-height:1.7;color:var(--ink);display:none}
+.ai-out.show{display:block}
+.ai-out h4{font-family:var(--font-head);color:var(--mystic);margin:.7rem 0 .2rem;font-size:.98rem}
+.ai-out b{color:var(--ink)}
+.ai-spin{display:inline-block;animation:aispin 1s linear infinite}
+@keyframes aispin{to{transform:rotate(360deg)}}
 .jrn-head{text-align:center;margin:2.6rem 0 .2rem;border-top:1px solid var(--border-soft);padding-top:1.8rem}
 .jrn-empty{text-align:center;color:var(--ink-faint);font-size:.9rem;max-width:480px;margin:1rem auto;line-height:1.6}
 .jentry{max-width:680px;margin:0 auto 1rem;background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);padding:1rem 1.1rem;box-shadow:var(--shadow-sm)}
@@ -847,6 +864,16 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <div id="spread-board"></div>
   <div id="spread-read"></div>
   <details class="howto"><summary>📖 Cách đọc &amp; liên kết nhiều lá (mẹo từ sách)</summary><div id="howto-body"></div></details>
+
+  <div class="ai-read" id="ai-read">
+    <h3>🤖 Nhờ Mèo AI đọc bài <span class="ai-tag">tuỳ chọn</span></h3>
+    <p class="ai-lead">Rút một trải bài ở trên, nhập câu hỏi → AI sẽ đọc giúp bạn như một reader thực thụ (đọc cả lá xuôi/ngược, nối các lá). Cần một <b>API key Gemini miễn phí</b> — chỉ lưu trên máy bạn, không gửi đi đâu khác.</p>
+    <textarea class="ai-q" id="ai-q" placeholder="Câu hỏi của bạn (vd: Chuyện tình cảm sắp tới của mình thế nào?) — để trống cũng được"></textarea>
+    <input type="password" class="ai-key" id="ai-key" placeholder="Dán API key Gemini vào đây (lưu trên máy)" autocomplete="off" spellcheck="false">
+    <div class="ai-row"><button class="btn btn--primary btn--sm" id="ai-go">✨ Nhờ Mèo AI đọc</button></div>
+    <p class="ai-hint">🔑 Lấy key miễn phí ở <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> → bấm <b>Create API key</b> rồi dán vào ô trên. Key chỉ nằm trong trình duyệt của bạn — Mèo không thấy &amp; chỉ gửi tới Google khi bạn bấm đọc.</p>
+    <div class="ai-out" id="ai-out"></div>
+  </div>
 
   <div class="jrn-head">
     <h3 class="section-title__heading">📔 Nhật ký Tarot</h3>
@@ -2694,6 +2721,49 @@ applyViews();
     out.querySelectorAll('.bc-open').forEach(b=>b.addEventListener('click',()=>openLesson(coerceId(b.dataset.id))));
   }
   goEl.addEventListener('click',run); aEl.addEventListener('change',run); bEl.addEventListener('change',run);
+})();
+
+/* ===== Nhờ AI đọc trải bài (Gemini, người dùng tự nhập key) ===== */
+(function(){
+  const goEl=document.getElementById('ai-go'); if(!goEl) return;
+  const qEl=document.getElementById('ai-q'), keyEl=document.getElementById('ai-key'), out=document.getElementById('ai-out');
+  const savedKey=localStorage.getItem('meo:tarot:aikey'); if(savedKey) keyEl.value=savedKey;
+  const esc=s=>String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+  function fmt(t){ return esc(t)
+    .replace(/^#{1,6}\s*(.+)$/gm,'<h4>$1</h4>')
+    .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+    .replace(/^\s*[-*]\s+(.+)$/gm,'• $1')
+    .replace(/\n/g,'<br>'); }
+  function buildPrompt(){
+    const sp=curSp();
+    const lines=draws.map((d,i)=>{ const c=byId(d.id), ori=d.rev?'Ngược':'Xuôi', mean=d.rev?c.rev:c.up;
+      return `- Vị trí ${i+1} · ${sp.pos[i][0]} (${sp.pos[i][1]}): ${c.name} (${c.en}) [${ori}]. Nghĩa tham khảo: ${mean}`; }).join('\n');
+    const q=(qEl.value||'').trim();
+    const sys=`Bạn là "Mèo Tiên Tri" — một người đọc Tarot giàu kinh nghiệm hơn 10 năm theo hệ Rider–Waite–Smith, đọc thành thạo cả lá xuôi lẫn lá ngược. Giọng ấm áp, gần gũi, thực tế và truyền cảm hứng; xưng "Mèo", gọi người hỏi là "bạn". Tuyệt đối KHÔNG phán định mệnh cứng nhắc hay doạ dẫm; luôn nhấn mạnh người hỏi có quyền tự quyết và mọi điều đều có thể thay đổi. Hãy đọc theo trình tự: (1) điểm nhanh từng lá theo đúng VỊ TRÍ của nó, tôn trọng chiều xuôi/ngược; (2) NỐI các lá thành một câu chuyện mạch lạc trả lời thẳng vào câu hỏi; (3) đưa 1–2 lời khuyên thực tế nhẹ nhàng + một lời động viên ấm áp. Trả lời bằng tiếng Việt, dùng markdown với vài đề mục ngắn (##) và in đậm (**), emoji vừa phải, không lan man.`;
+    const usr=`Kiểu trải bài: ${sp.title}.\nCâu hỏi của người xem: ${q||'(không có câu hỏi cụ thể — hãy đọc tổng quát về giai đoạn này)'}\n\nCác lá đã rút:\n${lines}\n\nHãy đọc trải bài này giúp bạn ấy.`;
+    return {sys,usr};
+  }
+  goEl.addEventListener('click', async ()=>{
+    if(!draws||!draws.length){ out.className='ai-out show'; out.innerHTML='🐱 Bạn rút một trải bài ở trên trước đã nha!'; return; }
+    const key=(keyEl.value||'').trim();
+    if(!key){ out.className='ai-out show'; out.innerHTML='🔑 Bạn cần dán API key Gemini (miễn phí) vào ô trên — lấy ở link ngay bên dưới nút nha.'; return; }
+    localStorage.setItem('meo:tarot:aikey',key);
+    const {sys,usr}=buildPrompt();
+    out.className='ai-out show'; out.innerHTML='<span class="ai-spin">🔮</span> Mèo đang chiêm nghiệm trải bài của bạn…';
+    goEl.disabled=true;
+    try{
+      const url='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+encodeURIComponent(key);
+      const res=await fetch(url,{ method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ system_instruction:{parts:[{text:sys}]}, contents:[{role:'user',parts:[{text:usr}]}], generationConfig:{temperature:0.9} }) });
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok){ throw new Error((data&&data.error&&data.error.message)||('Máy chủ trả lỗi '+res.status)); }
+      const cand=(data.candidates||[])[0]||{};
+      const txt=((cand.content||{}).parts||[]).map(p=>p.text||'').join('').trim();
+      out.innerHTML = txt ? fmt(txt)+'<p style="margin-top:.8rem;font-size:.72rem;color:var(--ink-faint)">🤖 Bài đọc do AI (Gemini) tạo — mang tính tham khảo &amp; gợi mở.</p>'
+                          : '🐱 AI chưa trả lời được (có thể do bộ lọc nội dung). Thử đổi câu hỏi rồi đọc lại nha.';
+    }catch(e){ out.innerHTML='😿 Chưa đọc được: '+esc(e.message||e)+'<br><small>Kiểm tra lại API key, kết nối mạng, hoặc thử lại sau nha.</small>'; }
+    goEl.disabled=false;
+  });
 })();
 
 /* ===== tinh vân xoay lấp lánh — phủ full màn hình (PC · tablet · mobile) ===== */
