@@ -2758,11 +2758,12 @@ applyViews();
     return ((((data.candidates||[])[0]||{}).content||{}).parts||[]).map(p=>p.text||'').join('').trim();
   }
   // Chủ web dán URL Cloudflare Worker (cầu nối) vào đây để bật AI MIỄN PHÍ cho mọi người (không cần key):
-  const PROXY_URL = '';
+  const PROXY_URL = 'https://tarot-ai.meomoemimi8.workers.dev';
   async function callProxy(sys,usr){
     const res=await fetch(PROXY_URL,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sys,usr}) });
     const d=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(d.error||('Cầu nối AI lỗi '+res.status));
+    if(!d.text && d.error) throw new Error(d.error);
     return (d.text||'').trim();
   }
   goEl.addEventListener('click', async ()=>{
