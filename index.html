@@ -441,6 +441,7 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 #spread-read .rd h4{font-family:var(--font-head);display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;font-size:1rem;margin-bottom:.2rem}
 #spread-read .rd h4 .ori{margin-left:auto}
 #spread-read .rd .rd-pos{color:var(--mystic);font-weight:600;font-size:.82rem;margin-bottom:.3rem}
+#spread-read .rd .rd-lens{display:inline-block;font-size:.68rem;font-weight:800;color:var(--pink-deep);background:var(--surface-2);border-radius:999px;padding:.05rem .45rem;margin-left:.3rem;vertical-align:middle}
 #spread-read .rd p{color:var(--ink-soft);line-height:1.6;font-size:.95rem}
 /* hướng dẫn kiểu trải */
 .sg{max-width:680px;margin:0 auto 1.2rem;border-radius:var(--radius);padding:1.1rem 1.3rem}
@@ -613,6 +614,22 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .dt-yn,.dt-af{display:inline-block;font-family:var(--font-head);font-weight:800;font-size:.8rem;color:var(--mystic);margin-right:.4rem}
 .dt-combos{list-style:none;display:flex;flex-direction:column;gap:.35rem}
 .dt-combos li{background:var(--surface);border:1px solid var(--border-soft);border-radius:8px;padding:.4rem .6rem;font-size:.85rem;color:var(--ink-soft);line-height:1.5}
+/* meta chips (hành tinh · cung · nguyên tố) + tra theo tình huống đời sống */
+.dt-meta{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0}
+.dt-chip{background:var(--surface);border:1px solid var(--border-soft);border-radius:999px;padding:.2rem .62rem;font-size:.78rem;color:var(--ink-soft)}
+.dt-grp-wrap{margin-top:.9rem}
+.dt-grp-wrap>h4{font-family:var(--font-head);font-size:.92rem;margin-bottom:.55rem;display:flex;align-items:center;gap:.4rem}
+.dt-grp-hint{font-size:.8rem;color:var(--ink-faint);margin:-.3rem 0 .55rem;line-height:1.5}
+.dt-grp{border:1px solid var(--border-soft);border-radius:10px;background:var(--surface);margin-bottom:.45rem;overflow:hidden}
+.dt-grp>summary{cursor:var(--wand),pointer;list-style:none;padding:.58rem .78rem;font-family:var(--font-head);font-weight:700;font-size:.86rem;color:var(--ink);display:flex;align-items:center;gap:.45rem}
+.dt-grp>summary::-webkit-details-marker{display:none}
+.dt-grp>summary::after{content:'▾';margin-left:auto;transition:transform .2s;color:var(--ink-faint)}
+.dt-grp[open]>summary::after{transform:rotate(180deg)}
+.dt-grp-n{font-size:.7rem;font-weight:800;color:var(--mystic);background:var(--surface-2);border-radius:999px;padding:.06rem .42rem}
+.dt-asp{padding:.5rem .78rem;border-top:1px dashed var(--border-soft)}
+.dt-asp__t{font-weight:700;font-size:.83rem;color:var(--ink);margin-bottom:.22rem}
+.dt-asp__b{font-size:.85rem;color:var(--ink-soft);line-height:1.6}
+.dt-asp__b br{content:'';display:block;margin:.18rem 0}
 
 /* about */
 .about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.1rem}
@@ -959,6 +976,7 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   </div>
 </div>
 
+<script src="data.js"></script>
 <script>
 /* ===================================================================
    MÈO TIÊN TRI — dữ liệu 22 lá Ẩn Chính theo Hành trình Chàng Khờ
@@ -1380,6 +1398,68 @@ CARDS.forEach(c=>c.id=c.n);          // Ẩn Chính: id = số lá (0–21)
 const ALL = CARDS.concat(MINOR);     // 78 lá
 const byId = id => ALL.find(c=>c.id===id);
 const coerceId = s => /^\d+$/.test(s) ? +s : s;
+
+/* ===================================================================
+   GHÉP KHO DỮ LIỆU GIÀU CÓ (data.js → window.TAROT_DB)
+   Mỗi lá ALL được gắn .db = bản ghi đầy đủ: 68 nhóm chủ đề đời sống
+   (mỗi nhóm có xuôi/ngược), advice, numerology, hành tinh/cung/nguyên tố.
+   Khóa ghép: Ẩn Chính theo id số (0–21); Ẩn Phụ theo chất+số (w1…p14).
+=================================================================== */
+(function attachDB(){
+  const SUITMAP = { wands:'w', cups:'c', swords:'s', pentacles:'p' };
+  const map = {};
+  (window.TAROT_DB || []).forEach(d=>{
+    const key = d.arcana==='major' ? String(d.id) : SUITMAP[d.suit] + Number(d.number);
+    map[key] = d;
+  });
+  ALL.forEach(c=>{
+    const key = (typeof c.id==='number') ? String(c.id) : c.id;
+    c.db = map[key] || null;
+  });
+})();
+
+/* 68 nhóm chủ đề (aspect) của data.js gom thành 7 nhóm lớn cho dễ tra cứu.
+   Mỗi mục: [khóa-aspect, nhãn tiếng Việt]. Chỉ hiện mục nào lá thực sự có. */
+const ASPECT_GROUPS = [
+  { ic:'💖', title:'Tình yêu & Quan hệ', items:[
+    ['love','Tình yêu nói chung'], ['current_love','Mối quan hệ hiện tại'], ['crush','Người đang thương'],
+    ['someone','Một người trong tâm trí'], ['secret_admirer','Người thầm mến'], ['soulmate','Tri kỷ / định mệnh'],
+    ['future_love','Tương lai tình cảm'], ['marriage','Hôn nhân'], ['long_distance','Yêu xa'],
+    ['reconciliation','Tái hợp'], ['breakup','Chia tay'], ['ex','Người cũ'],
+    ['conflict','Mâu thuẫn'], ['jealousy','Ghen tuông'], ['toxic_relationship','Mối quan hệ độc hại'],
+    ['friendship','Tình bạn'], ['self_love','Yêu thương bản thân'], ['ambiguous','Tình huống mập mờ'],
+  ]},
+  { ic:'💼', title:'Sự nghiệp & Công việc', items:[
+    ['career','Sự nghiệp nói chung'], ['job_search','Tìm việc'], ['interview','Phỏng vấn'],
+    ['promotion','Thăng tiến'], ['career_change','Đổi nghề'], ['business','Kinh doanh'],
+    ['startup','Khởi nghiệp'], ['freelance','Làm tự do'], ['side_hustle','Nghề tay trái'],
+    ['colleague','Đồng nghiệp'], ['workplace_politics','Chính trị công sở'], ['burnout','Kiệt sức'],
+  ]},
+  { ic:'💰', title:'Tiền bạc & Tài chính', items:[
+    ['finance','Tài chính nói chung'], ['investment','Đầu tư'], ['savings','Tiết kiệm'],
+    ['debt','Nợ nần'], ['luck_money','Vận may tiền bạc'], ['sudden_wealth','Tiền bất ngờ'],
+    ['financial_loss','Mất mát tài chính'], ['real_estate','Bất động sản'],
+  ]},
+  { ic:'🌿', title:'Sức khỏe & Tinh thần', items:[
+    ['health','Sức khỏe nói chung'], ['mental','Sức khỏe tinh thần'], ['energy','Năng lượng'],
+    ['stress','Căng thẳng'], ['burnout','Kiệt sức'], ['trauma','Tổn thương'],
+    ['healing','Chữa lành'], ['diet','Ăn uống'], ['pregnancy','Thai kỳ'],
+  ]},
+  { ic:'📚', title:'Học hành & Phát triển', items:[
+    ['study','Học tập'], ['exams','Thi cử'], ['study_abroad','Du học'],
+    ['scholarship','Học bổng'], ['talent','Năng khiếu'], ['decision','Quyết định'],
+  ]},
+  { ic:'🏡', title:'Gia đình & Đời sống', items:[
+    ['family','Gia đình'], ['moving','Chuyển nhà'], ['travel','Đi xa / du lịch'],
+    ['pet','Thú cưng'], ['legal','Pháp lý'], ['gossip','Lời đồn'],
+    ['lost_item','Đồ thất lạc'], ['luck_money','Vận may'],
+  ]},
+  { ic:'🔮', title:'Tâm linh & Bản thân', items:[
+    ['spiritual','Tâm linh'], ['self','Bản thân'], ['purpose','Sứ mệnh / lý tưởng'],
+    ['shadow_self','Bóng tối nội tâm'], ['spirit_guide','Đấng dẫn lối'], ['dream','Giấc mơ'],
+    ['past_life','Tiền kiếp'], ['karma','Nghiệp'], ['general','Tổng quan'],
+  ]},
+];
 
 /* ===== chiêm tinh (Golden Dawn) — decan cho lá số, court & ace ===== */
 const DECAN={
@@ -1829,6 +1909,40 @@ function detailHTML(d){
     ${d.combos&&d.combos.length?`<div class="dt-block"><h4>🔗 Khi đi cùng lá khác</h4><ul class="dt-combos">${d.combos.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}`;
 }
 
+/* ===== nội dung GIÀU từ data.js (window.TAROT_DB) gắn ở c.db =====
+   Diễn giải dài xuôi/ngược · hành tinh/cung/nguyên tố · lời khuyên ·
+   thần số học · 68 nhóm chủ đề gom 7 mục bấm-mở-rộng (xuôi/ngược). */
+function richDetailHTML(c){
+  const db=c.db; if(!db) return '';
+  const A=db.aspects||{};
+  const meta=[];
+  if(db.planet)  meta.push(`<span class="dt-chip">🪐 ${db.planet}</span>`);
+  if(db.zodiac)  meta.push(`<span class="dt-chip">♒ ${db.zodiac}</span>`);
+  if(db.element) meta.push(`<span class="dt-chip">🌿 ${db.element}</span>`);
+  // 7 nhóm lớn — chỉ render mục mà lá thực sự có; bỏ trùng aspect giữa các nhóm
+  const used=new Set();
+  const groups=ASPECT_GROUPS.map(g=>{
+    const rows=g.items.filter(([k])=>A[k]&&!used.has(k));
+    rows.forEach(([k])=>used.add(k));
+    if(!rows.length) return '';
+    const body=rows.map(([k,label])=>{
+      const a=A[k];
+      return `<div class="dt-asp"><div class="dt-asp__t">${label}</div><div class="dt-asp__b"><span class="dt-up">Xuôi</span> ${a.upright}<br><span class="dt-rev">Ngược</span> ${a.reversed}</div></div>`;
+    }).join('');
+    return `<details class="dt-grp"><summary>${g.ic} ${g.title} <span class="dt-grp-n">${rows.length}</span></summary>${body}</details>`;
+  }).join('');
+  return `
+    <div class="dt-block"><h4>📜 Diễn giải sâu</h4>
+      <p><span class="dt-up">Xuôi</span> ${db.upright||db.generalUpright||''}</p>
+      <p><span class="dt-rev">Ngược</span> ${db.reversed||db.generalReversed||''}</p></div>
+    ${meta.length?`<div class="dt-meta">${meta.join('')}</div>`:''}
+    ${db.advice?`<div class="dt-block"><h4>🧭 Lời khuyên của lá</h4><p>${db.advice}</p></div>`:''}
+    ${db.numerology?`<div class="dt-block"><h4>🔢 Thần số học</h4><p>${db.numerology}</p></div>`:''}
+    <div class="dt-grp-wrap"><h4>🔍 Tra theo tình huống đời sống</h4>
+      <p class="dt-grp-hint">Bạn đang phân vân chuyện gì? Bấm mở một nhóm để xem lá này nói gì cho đúng tình huống — cả khi xuôi và khi ngược.</p>
+      ${groups}</div>`;
+}
+
 /* ===== lesson modal ===== */
 const modal=document.getElementById('modal');
 let current=0;
@@ -1865,10 +1979,21 @@ function openLesson(id){
   const meoBox=document.querySelector('.lesson__meo');
   if(c.meo){ meoBox.style.display=''; document.getElementById('m-meo').textContent=c.meo; }
   else meoBox.style.display='none';
-  // nội dung chi tiết (ngữ cảnh · diễn giải sâu · lá kết hợp) — hiện khi có dữ liệu
+  // nội dung chi tiết — ưu tiên kho data.js (c.db: 68 nhóm + diễn giải dài),
+  // không có thì lùi về DETAIL cũ. Lá kết hợp (combos) vẫn lấy từ DETAIL nếu có.
   const det=DETAIL[c.id], detBox=document.getElementById('m-detail');
-  if(det){ detBox.style.display=''; detBox.open=false; document.getElementById('m-detail-body').innerHTML=detailHTML(det); }
-  else detBox.style.display='none';
+  const detSum=detBox.querySelector('summary');
+  if(c.db){
+    detBox.style.display=''; detBox.open=false;
+    const comboHTML = (det&&det.combos&&det.combos.length)
+      ? `<div class="dt-block"><h4>🔗 Khi đi cùng lá khác</h4><ul class="dt-combos">${det.combos.map(x=>`<li>${x}</li>`).join('')}</ul></div>` : '';
+    detSum.innerHTML='🔎 Tìm hiểu chi tiết hơn — tra theo tình huống · diễn giải sâu · lời khuyên';
+    document.getElementById('m-detail-body').innerHTML=richDetailHTML(c)+comboHTML;
+  } else if(det){
+    detBox.style.display=''; detBox.open=false;
+    detSum.innerHTML='🔎 Tìm hiểu chi tiết hơn — ngữ cảnh · diễn giải sâu · lá kết hợp';
+    document.getElementById('m-detail-body').innerHTML=detailHTML(det);
+  } else detBox.style.display='none';
   // câu hỏi tự vấn (theo từ khoá thật của lá)
   document.getElementById('m-prompts').innerHTML = promptsFor(c).map(q=>`<li>${q}</li>`).join('');
   // ghi chú cá nhân của lá này
@@ -2113,6 +2238,7 @@ const SPREADS=[
    tips:['Quy ước: lá xuôi nghiêng “Có”, lá ngược nghiêng “Không” — đa số thắng.','Lá Ẩn Chính nặng ký hơn; lá sáng (Mặt Trời, Thế Giới…) thiên “Có”, lá nặng (Tháp, 10 Kiếm…) thiên “Không”.','Đọc cả 3 lá để hiểu VÌ SAO, đừng chỉ nhìn kết luận.']},
   {id:'love',ic:'💞',name:'5 lá · Tình yêu',title:'Trải bài Tình yêu',
    purpose:'Nhìn toàn cảnh một mối quan hệ: bạn, người ấy, bản thân mối quan hệ, và dòng thời gian quá khứ → tương lai.',
+   aspectByPos:['self_love','someone','current_love','ex','future_love'],
    pos:[['Bạn','Bạn trong mối quan hệ này — cảm xúc & vai trò của bạn.'],['Người ấy','Đối phương — cảm xúc & vai trò của họ.'],['Mối quan hệ','“Thực thể” thứ ba: bản thân mối quan hệ giữa hai người.'],['Quá khứ','Điều hai người mang theo từ quá khứ.'],['Tương lai','Hướng đi sắp tới của mối quan hệ.']],
    tips:['So lá Bạn (1) với Người ấy (2): hai năng lượng hợp hay khắc?','Lá Mối quan hệ (3) là trọng tâm — “chất” thật của tình cảm.','Quá khứ (4) → Tương lai (5): đang lặp lại hay đang chuyển hướng?']},
 ];
@@ -2177,6 +2303,18 @@ function synthHTML(sp){
   return `<div class="synth glass"><h4>🧩 Gợi ý liên kết & tổng hợp</h4><ul>${items.map(t=>`<li>${t}</li>`).join('')}</ul>
     <p class="synth-note">🐱 Đây là gợi ý để bạn tự ghép thành câu chuyện của mình — tin vào trực giác nữa nhé.</p></div>`;
 }
+/* nhãn tiếng Việt của từng aspect (gom từ ASPECT_GROUPS) — để gắn "góc nhìn" khi đọc bài */
+const ASPECT_LABEL = (()=>{ const m={}; ASPECT_GROUPS.forEach(g=>g.items.forEach(([k,l])=>{ if(!m[k]) m[k]=l; })); return m; })();
+/* lời giải cho 1 lá trong trải bài: nếu trải bài có ánh xạ ngữ cảnh & lá có data.js
+   → lấy đúng nhóm aspect (vd Tình yêu); không thì dùng nghĩa chung. */
+function spreadMean(sp,c,d,i){
+  const asp = sp.aspectByPos ? sp.aspectByPos[i] : sp.aspect;
+  if(asp && c.db && c.db.aspects && c.db.aspects[asp]){
+    const a=c.db.aspects[asp];
+    return { text:(d.rev?a.reversed:a.upright), lens:ASPECT_LABEL[asp]||'' };
+  }
+  return { text:(d.rev?c.rev:c.up), lens:'' };
+}
 function renderSpreadResult(){
   const sp=curSp(), board=document.getElementById('spread-board'), read=document.getElementById('spread-read');
   document.getElementById('resetN').hidden=false;
@@ -2186,7 +2324,9 @@ function renderSpreadResult(){
     board.innerHTML=`<div class="board-row">${sp.pos.map((_,i)=>posCardHTML(sp,i)).join('')}</div>`;
   }
   board.querySelectorAll('.tcard[data-id]').forEach(b=>b.onclick=()=>openLesson(coerceId(b.dataset.id)));
-  const rows=draws.map((d,i)=>{const c=byId(d.id);return `<div class="rd"><h4><span class="spot__no">${i+1}</span> ${sp.pos[i][0]} — ${c.name} ${oriBadge(d.rev)}</h4><p class="rd-pos">${sp.pos[i][1]}</p><p>${d.rev?c.rev:c.up}</p></div>`;}).join('');
+  const rows=draws.map((d,i)=>{const c=byId(d.id); const m=spreadMean(sp,c,d,i);
+    const lens=m.lens?` <span class="rd-lens">góc ${m.lens}</span>`:'';
+    return `<div class="rd"><h4><span class="spot__no">${i+1}</span> ${sp.pos[i][0]} — ${c.name} ${oriBadge(d.rev)}</h4><p class="rd-pos">${sp.pos[i][1]}${lens}</p><p>${m.text}</p></div>`;}).join('');
   let head='';
   if(sp.verdict){ const up=draws.filter(d=>!d.rev).length;
     const v=up===3?['CÓ ✅','rất rõ — cả 3 lá xuôi']:up===2?['Nghiêng CÓ 🙂','2/3 lá xuôi']:up===1?['Nghiêng KHÔNG 😕','2/3 lá ngược']:['KHÔNG ❌','rất rõ — cả 3 lá ngược'];
@@ -2742,8 +2882,9 @@ applyViews();
     .replace(/\n/g,'<br>'); }
   function buildPrompt(){
     const sp=curSp();
-    const lines=draws.map((d,i)=>{ const c=byId(d.id), ori=d.rev?'Ngược':'Xuôi', mean=d.rev?c.rev:c.up;
-      return `- Vị trí ${i+1} · ${sp.pos[i][0]} (${sp.pos[i][1]}): ${c.name} (${c.en}) [${ori}]. Nghĩa tham khảo: ${mean}`; }).join('\n');
+    const lines=draws.map((d,i)=>{ const c=byId(d.id), ori=d.rev?'Ngược':'Xuôi', m=spreadMean(sp,c,d,i);
+      const lensTxt=m.lens?` (góc ${m.lens})`:'';
+      return `- Vị trí ${i+1} · ${sp.pos[i][0]} (${sp.pos[i][1]}): ${c.name} (${c.en}) [${ori}]${lensTxt}. Nghĩa tham khảo: ${m.text}`; }).join('\n');
     const q=(qEl.value||'').trim();
     const sys=`Bạn là "Mèo Tiên Tri" — một người đọc Tarot giàu kinh nghiệm hơn 10 năm theo hệ Rider–Waite–Smith, đọc thành thạo cả lá xuôi lẫn lá ngược. Giọng ấm áp, gần gũi, thực tế và truyền cảm hứng; xưng "Mèo", gọi người hỏi là "bạn". Tuyệt đối KHÔNG phán định mệnh cứng nhắc hay doạ dẫm; luôn nhấn mạnh người hỏi có quyền tự quyết và mọi điều đều có thể thay đổi. Hãy đọc theo trình tự: (1) điểm nhanh từng lá theo đúng VỊ TRÍ của nó, tôn trọng chiều xuôi/ngược; (2) NỐI các lá thành một câu chuyện mạch lạc trả lời thẳng vào câu hỏi; (3) đưa 1–2 lời khuyên thực tế nhẹ nhàng + một lời động viên ấm áp. Trả lời bằng tiếng Việt, dùng markdown với vài đề mục ngắn (##) và in đậm (**), emoji vừa phải, không lan man.`;
     const usr=`Kiểu trải bài: ${sp.title}.\nCâu hỏi của người xem: ${q||'(không có câu hỏi cụ thể — hãy đọc tổng quát về giai đoạn này)'}\n\nCác lá đã rút:\n${lines}\n\nHãy đọc trải bài này giúp bạn ấy.`;
