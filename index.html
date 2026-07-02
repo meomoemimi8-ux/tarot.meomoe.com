@@ -112,7 +112,13 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .searchbox:focus{outline:2px solid var(--mystic);border-color:var(--mystic)}
 #search-results{max-width:var(--app);margin:0 auto;padding:0 1.25rem}
 .search-head{text-align:center;font-family:var(--font-head);font-weight:700;color:var(--ink-soft);margin:1rem 0 .9rem}
-.learn-subbar{max-width:var(--app);margin:0 auto;padding:.8rem 1.25rem 0;display:flex;justify-content:center}
+.learn-subbar{max-width:var(--app);margin:0 auto;padding:.8rem 1.25rem 0}
+#seg-learn{display:flex;flex-wrap:wrap;gap:.9rem 1.6rem;justify-content:center}
+.lg-grp{display:flex;flex-direction:column;gap:.4rem;align-items:center}
+.lg-grp__label{font-family:var(--font-head);font-weight:800;font-size:.72rem;color:var(--ink-faint);letter-spacing:.02em}
+.lg-grp__chips{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center}
+#seg-learn button{border:1px solid var(--border-soft);background:var(--surface);color:var(--ink-soft);font-family:var(--font-head);font-weight:700;font-size:.82rem;padding:.4rem .8rem;border-radius:999px;box-shadow:var(--shadow-sm);transition:background .2s,color .2s,border-color .2s;cursor:var(--wand),pointer}
+#seg-learn button.is-on{background:var(--mystic);color:#fff;border-color:var(--mystic)}
 .nav__brand{background:none;border:none;cursor:pointer}
 
 /* buttons */
@@ -769,13 +775,23 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <input id="card-search" class="searchbox" type="search" autocomplete="off" placeholder="🔍 Tìm lá theo tên (vd: cốc, mặt trời, vua…)">
 </div>
 <div class="learn-subbar" data-view="learn">
-  <div class="seg" id="seg-learn" role="tablist" aria-label="Mục học">
-    <button data-sub="journey" class="is-on">🗺️ Ẩn Chính</button>
-    <button data-sub="minor">🎴 Ẩn Phụ</button>
-    <button data-sub="visual">🎨 Hình ảnh</button>
-    <button data-sub="topic">🌟 Lá tín hiệu</button>
-    <button data-sub="review">🃏 Ôn tập</button>
-    <button data-sub="base">📜 Nền tảng</button>
+  <div id="seg-learn" role="tablist" aria-label="Mục học">
+    <div class="lg-grp">
+      <span class="lg-grp__label">🎴 Thẻ bài</span>
+      <div class="lg-grp__chips">
+        <button data-sub="journey" class="is-on">🗺️ Ẩn Chính</button>
+        <button data-sub="minor">🎴 Ẩn Phụ</button>
+        <button data-sub="visual">🎨 Hình ảnh</button>
+      </div>
+    </div>
+    <div class="lg-grp">
+      <span class="lg-grp__label">🔎 Luyện & tra cứu</span>
+      <div class="lg-grp__chips">
+        <button data-sub="topic">🌟 Lá tín hiệu</button>
+        <button data-sub="review">🃏 Ôn tập</button>
+        <button data-sub="base">📜 Nền tảng</button>
+      </div>
+    </div>
   </div>
 </div>
 <div id="search-results" data-view="learn"></div>
