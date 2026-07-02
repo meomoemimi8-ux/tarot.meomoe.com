@@ -443,9 +443,23 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 #spread-read .rd .rd-pos{color:var(--mystic);font-weight:600;font-size:.82rem;margin-bottom:.3rem}
 #spread-read .rd .rd-lens{display:inline-block;font-size:.68rem;font-weight:800;color:var(--pink-deep);background:var(--surface-2);border-radius:999px;padding:.05rem .45rem;margin-left:.3rem;vertical-align:middle}
 #spread-read .rd p{color:var(--ink-soft);line-height:1.6;font-size:.95rem}
+/* nhãn bước ①②③ cho flow đọc bài */
+.rd-step{max-width:680px;margin:1.4rem auto .6rem;font-family:var(--font-head);font-weight:800;font-size:.82rem;letter-spacing:.02em;color:var(--mystic);text-transform:uppercase;display:flex;align-items:center;gap:.5rem}
+.rd-step[hidden]{display:none}
+.rd-step::after{content:'';flex:1;height:1px;background:var(--border-soft)}
 /* hướng dẫn kiểu trải */
-.sg{max-width:680px;margin:0 auto 1.2rem;border-radius:var(--radius);padding:1.1rem 1.3rem}
-.sg-purpose{color:var(--ink-soft);line-height:1.55;margin-bottom:.7rem;font-size:.95rem}
+.sg{max-width:680px;margin:0 auto 1.2rem;border-radius:var(--radius);padding:1rem 1.2rem}
+.sg-purpose{color:var(--ink-soft);line-height:1.55;font-size:.95rem}
+/* badge độ khó */
+.sg-lvl{display:inline-block;font-size:.66rem;font-weight:800;border-radius:999px;padding:.08rem .5rem;color:#fff;vertical-align:middle;margin-right:.15rem}
+.sg-lvl--de{background:#4ea87b}.sg-lvl--vua{background:var(--mystic)}.sg-lvl--sau{background:var(--pink-deep)}
+/* hướng dẫn chi tiết thu gọn */
+.sg-more{margin-top:.7rem;border-top:1px dashed var(--border-soft);padding-top:.5rem}
+.sg-more>summary{cursor:var(--wand),pointer;list-style:none;font-family:var(--font-head);font-weight:700;font-size:.86rem;color:var(--mystic);display:flex;align-items:center;gap:.35rem}
+.sg-more>summary::-webkit-details-marker{display:none}
+.sg-more>summary::before{content:'▸';transition:transform .2s;font-size:.75rem}
+.sg-more[open]>summary::before{transform:rotate(90deg)}
+.sg-more .sg-pos{margin-top:.7rem}
 .sg-pos{list-style:none;display:flex;flex-direction:column;gap:.45rem;margin-bottom:.8rem}
 .sg-pos li{display:flex;gap:.55rem;align-items:flex-start;font-size:.9rem;color:var(--ink-soft);line-height:1.4}
 .sg-pos b{color:var(--ink)}
@@ -875,20 +889,23 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 <!-- SPREAD -->
 <section id="spread" class="section" data-view="read">
   <div class="section-title"><h2 class="section-title__heading">🔮 Trải bài</h2></div>
-  <p class="section__lead">Chọn kiểu trải → đọc ý nghĩa từng vị trí → rút bài & xem gợi ý <b>cách nối các lá</b>.</p>
+  <p class="section__lead">3 bước gọn: <b>chọn kiểu trải → rút bài → đọc</b>. Mới chơi thì bắt đầu với <b>3 lá</b> nha 🌱</p>
+  <div class="rd-step">① Chọn kiểu trải</div>
   <div class="lib-tabs"><div class="seg" id="seg-spread" role="tablist" aria-label="Kiểu trải"></div></div>
   <div id="spread-guide"></div>
+  <div class="rd-step">② Rút bài</div>
   <div class="spread-actions">
     <button class="btn btn--primary" id="drawN">🔮 Rút bài</button>
     <button class="btn btn--ghost btn--sm" id="resetN" hidden>Rút lại</button>
   </div>
+  <div class="rd-step" id="step3" hidden>③ Lời bài dành cho bạn</div>
   <div id="spread-board"></div>
   <div id="spread-read"></div>
   <details class="howto"><summary>📖 Cách đọc &amp; liên kết nhiều lá (mẹo từ sách)</summary><div id="howto-body"></div></details>
 
-  <div class="ai-read" id="ai-read">
+  <div class="ai-read" id="ai-read" hidden>
     <h3>🤖 Nhờ Mèo AI đọc bài <span class="ai-tag">AI</span></h3>
-    <p class="ai-lead">Rút một trải bài ở trên, nhập câu hỏi → AI đọc giúp bạn như một reader thực thụ (đọc cả lá xuôi/ngược, nối các lá, trả lời câu hỏi). Khi chủ web bật "cầu nối" thì <b>dùng free không cần key</b>; hoặc bạn tự dùng key Gemini ở phần Nâng cao.</p>
+    <p class="ai-lead">Nhập câu hỏi → Mèo AI đọc trải bài vừa rút như một reader thực thụ (nối các lá, trả lời thẳng câu hỏi). <b>Free, không cần key</b>; hoặc tự dùng key Gemini ở phần Nâng cao.</p>
     <textarea class="ai-q" id="ai-q" placeholder="Câu hỏi của bạn (vd: Chuyện tình cảm sắp tới của mình thế nào?) — để trống cũng được"></textarea>
     <div class="ai-row"><button class="btn btn--primary btn--sm" id="ai-go">✨ Nhờ Mèo AI đọc</button></div>
     <details class="ai-adv"><summary>⚙️ Nâng cao: dùng API key Gemini riêng (chất lượng cao hơn)</summary>
@@ -898,11 +915,13 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
     <div class="ai-out" id="ai-out"></div>
   </div>
 
-  <div class="jrn-head">
-    <h3 class="section-title__heading">📔 Nhật ký Tarot</h3>
-    <p class="section__lead">Lưu lại các lần rút bài kèm cảm nhận của bạn — xem lại để thấy mình lớn lên qua từng lá.</p>
+  <div id="journal-wrap" hidden>
+    <div class="jrn-head">
+      <h3 class="section-title__heading">📔 Nhật ký Tarot</h3>
+      <p class="section__lead">Lưu lại các lần rút bài kèm cảm nhận của bạn — xem lại để thấy mình lớn lên qua từng lá.</p>
+    </div>
+    <div id="journal"></div>
   </div>
-  <div id="journal"></div>
 </section>
 
 <!-- ABOUT -->
@@ -2244,16 +2263,29 @@ const SPREADS=[
 ];
 let curSpread='ppf', draws=[];
 function curSp(){ return SPREADS.find(s=>s.id===curSpread); }
-function clearSpread(){ draws=[]; document.getElementById('spread-board').innerHTML=''; document.getElementById('spread-read').innerHTML=''; document.getElementById('resetN').hidden=true; }
+/* độ khó gợi ý cho người mới */
+const SPREAD_LVL={ one:{txt:'Dễ',cls:'de'}, ppf:{txt:'Dễ',cls:'de'}, yesno:{txt:'Vừa',cls:'vua'}, sao:{txt:'Vừa',cls:'vua'}, horse:{txt:'Sâu',cls:'sau'}, love:{txt:'Sâu',cls:'sau'}, celtic:{txt:'Sâu',cls:'sau'} };
+/* hiện/ẩn phần AI + Nhật ký theo bước (chỉ hiện sau khi có trải bài;
+   Nhật ký vẫn hiện sẵn nếu đã có mục cũ để xem lại). */
+function revealAfterDraw(on){
+  const ai=document.getElementById('ai-read'), jw=document.getElementById('journal-wrap'), s3=document.getElementById('step3');
+  if(ai) ai.hidden=!on;
+  if(s3) s3.hidden=!on;
+  if(jw) jw.hidden=!(on || (typeof JOURNAL!=='undefined' && JOURNAL.length));
+}
+function clearSpread(){ draws=[]; document.getElementById('spread-board').innerHTML=''; document.getElementById('spread-read').innerHTML=''; document.getElementById('resetN').hidden=true; revealAfterDraw(false); }
 function renderSpreadGuide(){
-  const sp=curSp();
+  const sp=curSp(), lvl=SPREAD_LVL[sp.id];
   document.querySelectorAll('#seg-spread button').forEach(b=>b.classList.toggle('is-on',b.dataset.sp===curSpread));
   const posList=sp.pos.map((p,i)=>`<li><span class="sg-no">${i+1}</span><div><b>${p[0]}</b> — ${p[1]}</div></li>`).join('');
   document.getElementById('spread-guide').innerHTML=`<div class="sg glass">
-      <p class="sg-purpose">${sp.purpose}</p>
-      <ol class="sg-pos">${posList}</ol>
-      <div class="sg-tips"><b>🔗 Mẹo đọc cả bài:</b><ul>${sp.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-    </div>`+moreLinks([['ethics','❓ Đặt câu hỏi đúng & đạo đức'],['rev','🔄 Đọc lá ngược']]);
+      <p class="sg-purpose">${lvl?`<span class="sg-lvl sg-lvl--${lvl.cls}">${lvl.txt}</span> `:''}${sp.purpose}</p>
+      <details class="sg-more"><summary>🧭 Ý nghĩa ${sp.pos.length} vị trí &amp; mẹo đọc</summary>
+        <ol class="sg-pos">${posList}</ol>
+        <div class="sg-tips"><b>🔗 Mẹo đọc cả bài:</b><ul>${sp.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+        ${moreLinks([['ethics','❓ Đặt câu hỏi đúng & đạo đức'],['rev','🔄 Đọc lá ngược']])}
+      </details>
+    </div>`;
   document.getElementById('drawN').textContent=`🔮 Rút ${sp.pos.length} lá`;
 }
 function drawSpread(){
@@ -2334,7 +2366,8 @@ function renderSpreadResult(){
   }
   read.innerHTML=head+rows+synthHTML(sp)+`<div class="sp-save"><button class="btn btn--soft btn--sm" id="sp-journal">📔 Lưu vào nhật ký</button><span id="sp-saved" class="sp-saved"></span></div>`;
   document.getElementById('sp-journal').onclick=saveSpreadToJournal;
-  read.scrollIntoView({behavior:'smooth',block:'nearest'});
+  revealAfterDraw(true);
+  document.getElementById('step3').scrollIntoView({behavior:'smooth',block:'start'});
 }
 function buildHowto(){
   document.getElementById('howto-body').innerHTML=`<div class="howto-grid">
@@ -2662,7 +2695,7 @@ document.getElementById('seg-spread').innerHTML=SPREADS.map(s=>`<button data-sp=
 document.querySelectorAll('#seg-spread button').forEach(b=>b.onclick=()=>{ curSpread=b.dataset.sp; clearSpread(); renderSpreadGuide(); });
 document.getElementById('drawN').onclick=drawSpread;
 document.getElementById('resetN').onclick=clearSpread;
-renderSpreadGuide(); buildHowto(); buildBase();
+renderSpreadGuide(); revealAfterDraw(false); buildHowto(); buildBase();
 document.getElementById('startcard').onclick=()=>openLesson(firstUnlearned());
 
 /* ===== floating emojis hero ===== */
