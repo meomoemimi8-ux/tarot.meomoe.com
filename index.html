@@ -773,6 +773,7 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
     <button data-sub="journey" class="is-on">🗺️ Ẩn Chính</button>
     <button data-sub="minor">🎴 Ẩn Phụ</button>
     <button data-sub="visual">🎨 Hình ảnh</button>
+    <button data-sub="topic">🌟 Lá tín hiệu</button>
     <button data-sub="review">🃏 Ôn tập</button>
     <button data-sub="base">📜 Nền tảng</button>
   </div>
@@ -845,7 +846,7 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <div id="visual-body"></div>
 </section>
 
-<!-- TOPICS: tình cảm / sự nghiệp / học tập -->
+<!-- KHÁM PHÁ: Lá Bản Mệnh + Ghép đôi (số học Mary K. Greer) -->
 <section id="birth" class="section" data-view="topics">
   <div class="section-title">
     <span class="section-title__kicker">🎂 số học tarot</span>
@@ -879,12 +880,13 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <p class="birth-src">Tương hợp dựa trên Lá Bản Mệnh là cách đọc mang tính tham khảo &amp; gợi mở — không phải phán xét đúng/sai về một mối quan hệ nha.</p>
 </section>
 
-<section id="topics" class="section" data-view="topics">
+<!-- LÁ TÍN HIỆU theo chủ đề (mục con của tab Học) -->
+<section id="topics" class="section" data-view="learn" data-sub="topic">
   <div class="section-title">
-    <span class="section-title__kicker">💡 thực chiến</span>
-    <h2 class="section-title__heading">Đọc theo chủ đề</h2>
+    <span class="section-title__kicker">🌟 lá tín hiệu</span>
+    <h2 class="section-title__heading">Lá tín hiệu theo chủ đề</h2>
   </div>
-  <p class="section__lead">3 câu hỏi mọi người hay hỏi nhất. Mỗi chủ đề có nhóm <b>lá tin vui</b> 🌟 và nhóm <b>lá cảnh báo</b> ⚠️ — nhớ vài lá "tín hiệu" này là đọc bài nhanh hơn hẳn.</p>
+  <p class="section__lead">3 chủ đề mọi người hay hỏi nhất. Mỗi chủ đề có nhóm <b>lá tin vui</b> 🌟 và nhóm <b>lá cảnh báo</b> ⚠️ — thuộc vài lá "tín hiệu" này thì nhìn bài là đoán nhanh hơn hẳn.</p>
   <div class="lib-tabs">
     <div class="seg" id="seg-topic" role="tablist" aria-label="Chủ đề">
       <button data-tv="love" class="is-on">💞 Tình cảm</button>
@@ -2789,8 +2791,8 @@ function applyViews(){
   });
   document.querySelectorAll('#tabbar button').forEach(b=>b.classList.toggle('is-on',b.dataset.view===curView));
   document.querySelectorAll('#seg-learn button').forEach(b=>b.classList.toggle('is-on',b.dataset.sub===curSub));
-  // ô tìm lá chỉ dành cho các mục thẻ bài; ẩn khi đang ở Ôn tập / Nền tảng
-  const deckSub = !['review','base'].includes(curSub);
+  // ô tìm lá chỉ dành cho 3 mục thẻ bài (Ẩn Chính/Phụ/Hình ảnh); ẩn ở Lá tiêu biểu, Ôn tập, Nền tảng
+  const deckSub = ['journey','minor','visual'].includes(curSub);
   const ls=document.querySelector('.learn-search');
   if(ls) ls.style.display = (curView==='learn' && deckSub) ? '' : 'none';
   if(!deckSub){ const sr=document.getElementById('search-results'); if(sr) sr.style.display='none'; }
