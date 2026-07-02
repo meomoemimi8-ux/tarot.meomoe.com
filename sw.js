@@ -1,5 +1,5 @@
 // Mèo Tiên Tri service worker — chạy offline. Bump CACHE khi đổi nội dung để cập nhật.
-const CACHE = 'meotientri-v37';
+const CACHE = 'meotientri-v38';
 const SHELL = ['./', './index.html', './data.js', './manifest.webmanifest', './tarot_sq.png', './tarot-sprite.png', './icon-192.png', './icon-512.png', './icon-512-maskable.png', './icon-180.png'];
 
 self.addEventListener('install', e => {

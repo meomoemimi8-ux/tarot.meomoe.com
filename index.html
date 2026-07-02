@@ -718,10 +718,8 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 <nav class="tabbar" id="tabbar" aria-label="Điều hướng chính">
   <button data-view="home" class="is-on"><span class="tabbar__ic">🌙</span>Nhà</button>
   <button data-view="learn"><span class="tabbar__ic">📚</span>Học</button>
-  <button data-view="topics"><span class="tabbar__ic">💡</span>Chủ đề</button>
   <button data-view="read"><span class="tabbar__ic">🔮</span>Đọc</button>
-  <button data-view="review"><span class="tabbar__ic">🃏</span>Ôn</button>
-  <button data-view="base"><span class="tabbar__ic">📜</span>Sổ tay</button>
+  <button data-view="topics"><span class="tabbar__ic">✨</span>Khám phá</button>
 </nav>
 
 <!-- HERO -->
@@ -747,11 +745,11 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
       <span class="startcard__go">→</span>
     </button>
     <div class="home__tiles">
+      <button class="htile" onclick="showView('read')"><span class="htile__ic">🔮</span><b>Trải bài</b><small>rút lá hỏi đáp</small></button>
+      <button class="htile" onclick="showView('topics')"><span class="htile__ic">🎂</span><b>Lá Bản Mệnh</b><small>xem theo ngày sinh</small></button>
+      <button class="htile" onclick="showView('learn');showSub('review')"><span class="htile__ic">🃏</span><b>Ôn tập</b><small>flashcard & quiz</small></button>
       <button class="htile" onclick="showView('learn');showSub('minor')"><span class="htile__ic">🎴</span><b>Ẩn Phụ</b><small>56 lá đời thường</small></button>
-      <button class="htile" onclick="showView('learn');showSub('visual')"><span class="htile__ic">🎨</span><b>Hình ảnh</b><small>đọc bài qua tranh</small></button>
-      <button class="htile" onclick="showView('topics')"><span class="htile__ic">💡</span><b>Chủ đề</b><small>tình cảm · nghề · học</small></button>
-      <button class="htile" onclick="showView('read')"><span class="htile__ic">🔮</span><b>Trải bài</b><small>rút 3 lá hỏi đáp</small></button>
-      <button class="htile" onclick="showView('review')"><span class="htile__ic">🃏</span><b>Ôn tập</b><small>flashcard & quiz</small></button>
+      <button class="htile" onclick="showView('learn');showSub('base')"><span class="htile__ic">📜</span><b>Nền tảng</b><small>lý thuyết, đạo đức</small></button>
     </div>
   </div>
 </header>
@@ -775,6 +773,8 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
     <button data-sub="journey" class="is-on">🗺️ Ẩn Chính</button>
     <button data-sub="minor">🎴 Ẩn Phụ</button>
     <button data-sub="visual">🎨 Hình ảnh</button>
+    <button data-sub="review">🃏 Ôn tập</button>
+    <button data-sub="base">📜 Nền tảng</button>
   </div>
 </div>
 <div id="search-results" data-view="learn"></div>
@@ -812,8 +812,8 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <div id="minor-decks"></div>
 </section>
 
-<!-- REVIEW -->
-<section id="review" class="section" data-view="review">
+<!-- REVIEW (mục con của tab Học) -->
+<section id="review" class="section" data-view="learn" data-sub="review">
   <div class="section-title">
     <span class="section-title__kicker">🃏 ôn tập</span>
     <h2 class="section-title__heading">Lật thẻ &amp; Đố từ khoá</h2>
@@ -946,8 +946,8 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   </div>
 </section>
 
-<!-- NỀN TẢNG / SỔ TAY -->
-<section id="base" class="section" data-view="base">
+<!-- NỀN TẢNG / SỔ TAY (mục con của tab Học) -->
+<section id="base" class="section" data-view="learn" data-sub="base">
   <div class="section-title"><h2 class="section-title__heading">📜 Sổ tay nền tảng</h2></div>
   <p class="section__lead">Học sâu để tự đứng vững: lịch sử, Kabbalah, thần số, lá ngược, đạo đức, thuật ngữ &amp; nguồn đọc. Chạm từng chương để mở.</p>
   <div id="base-body"></div>
@@ -2056,7 +2056,7 @@ document.getElementById('m-learn').addEventListener('click',()=>{
 document.getElementById('m-review').addEventListener('click',()=>{
   closeLesson(); reviewMode='flip'; setModeUI('flip');
   deck=[current]; deckPos=0; renderReview();
-  showView('review');
+  showView('learn'); showSub('review');
 });
 // ghi chú: tự lưu khi gõ (debounce), hiện "✓ đã lưu", cập nhật badge 📝 trên lá
 const noteEl=document.getElementById('m-note'); let noteTimer;
@@ -2789,6 +2789,11 @@ function applyViews(){
   });
   document.querySelectorAll('#tabbar button').forEach(b=>b.classList.toggle('is-on',b.dataset.view===curView));
   document.querySelectorAll('#seg-learn button').forEach(b=>b.classList.toggle('is-on',b.dataset.sub===curSub));
+  // ô tìm lá chỉ dành cho các mục thẻ bài; ẩn khi đang ở Ôn tập / Nền tảng
+  const deckSub = !['review','base'].includes(curSub);
+  const ls=document.querySelector('.learn-search');
+  if(ls) ls.style.display = (curView==='learn' && deckSub) ? '' : 'none';
+  if(!deckSub){ const sr=document.getElementById('search-results'); if(sr) sr.style.display='none'; }
 }
 function runSearch(q){
   q=(q||'').trim().toLowerCase(); searching=q.length>0;
@@ -2806,7 +2811,7 @@ function runSearch(q){
 function showView(v){ curView=v; applyViews(); scrollTo(0,0); }
 function openChapter(id){
   if(typeof closeLesson==='function') closeLesson();
-  showView('base');
+  showView('learn'); showSub('base');
   const el=document.querySelector('.basechap[data-chap="'+id+'"]');
   if(el){ el.open=true; setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),90); }
 }
