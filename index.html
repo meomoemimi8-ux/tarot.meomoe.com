@@ -447,6 +447,15 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
 .rd-step{max-width:680px;margin:1.4rem auto .6rem;font-family:var(--font-head);font-weight:800;font-size:.82rem;letter-spacing:.02em;color:var(--mystic);text-transform:uppercase;display:flex;align-items:center;gap:.5rem}
 .rd-step[hidden]{display:none}
 .rd-step::after{content:'';flex:1;height:1px;background:var(--border-soft)}
+/* bộ chọn kiểu trải — gom nhóm */
+.sp-picker{max-width:680px;margin:0 auto 1.4rem;display:flex;flex-direction:column;gap:.9rem}
+.sp-grp__label{font-family:var(--font-head);font-weight:800;font-size:.78rem;color:var(--ink-faint);margin-bottom:.45rem;letter-spacing:.01em}
+.sp-grp__chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.sp-chip{border:1px solid var(--border-soft);background:var(--surface);color:var(--ink-soft);font-family:var(--font-head);font-weight:700;font-size:.83rem;padding:.4rem .7rem;border-radius:999px;box-shadow:var(--shadow-sm);display:inline-flex;align-items:center;gap:.35rem;transition:background .2s,color .2s,border-color .2s;cursor:var(--wand),pointer}
+.sp-chip.is-on{background:var(--mystic);color:#fff;border-color:var(--mystic)}
+.sp-chip__lvl{font-size:.6rem;font-weight:800;border-radius:999px;padding:.03rem .34rem;color:#fff;line-height:1.4}
+.sp-chip__lvl--de{background:#4ea87b}.sp-chip__lvl--vua{background:#8a6bd8}.sp-chip__lvl--sau{background:var(--pink-deep)}
+.sp-chip.is-on .sp-chip__lvl{background:rgba(255,255,255,.28)}
 /* hướng dẫn kiểu trải */
 .sg{max-width:680px;margin:0 auto 1.2rem;border-radius:var(--radius);padding:1rem 1.2rem}
 .sg-purpose{color:var(--ink-soft);line-height:1.55;font-size:.95rem}
@@ -891,7 +900,7 @@ a,button,.nav__link,.tcard,.choice{cursor:var(--wand),pointer}
   <div class="section-title"><h2 class="section-title__heading">🔮 Trải bài</h2></div>
   <p class="section__lead">3 bước gọn: <b>chọn kiểu trải → rút bài → đọc</b>. Mới chơi thì bắt đầu với <b>3 lá</b> nha 🌱</p>
   <div class="rd-step">① Chọn kiểu trải</div>
-  <div class="lib-tabs"><div class="seg" id="seg-spread" role="tablist" aria-label="Kiểu trải"></div></div>
+  <div id="seg-spread" class="sp-picker" role="tablist" aria-label="Kiểu trải"></div>
   <div id="spread-guide"></div>
   <div class="rd-step">② Rút bài</div>
   <div class="spread-actions">
@@ -2260,11 +2269,46 @@ const SPREADS=[
    aspectByPos:['self_love','someone','current_love','ex','future_love'],
    pos:[['Bạn','Bạn trong mối quan hệ này — cảm xúc & vai trò của bạn.'],['Người ấy','Đối phương — cảm xúc & vai trò của họ.'],['Mối quan hệ','“Thực thể” thứ ba: bản thân mối quan hệ giữa hai người.'],['Quá khứ','Điều hai người mang theo từ quá khứ.'],['Tương lai','Hướng đi sắp tới của mối quan hệ.']],
    tips:['So lá Bạn (1) với Người ấy (2): hai năng lượng hợp hay khắc?','Lá Mối quan hệ (3) là trọng tâm — “chất” thật của tình cảm.','Quá khứ (4) → Tương lai (5): đang lặp lại hay đang chuyển hướng?']},
+  // ===== bổ sung (nguồn: Labyrinthos, Biddy Tarot, The Tarot Guide, Llewellyn) =====
+  {id:'mbs',ic:'☯️',name:'3 lá · Thân–Tâm–Trí',title:'Thân – Tâm – Trí',
+   purpose:'Một cái nhìn tổng thể về bạn trên ba tầng: cơ thể, tâm hồn và tâm trí. Hợp để tự "check-in" sức khoẻ & sự cân bằng, không cần câu hỏi cụ thể.',
+   aspectByPos:['health','spiritual','mental'],
+   pos:[['Thân','Cơ thể: sức khoẻ, năng lượng thể chất & điều cơ thể đang cần.'],['Tâm','Tâm hồn: cảm xúc, nội tâm, trực giác & sự kết nối tâm linh.'],['Trí','Tâm trí: dòng suy nghĩ, trạng thái tinh thần, điều đang khúc mắc hay sáng tỏ.']],
+   tips:['Bày trái (Thân) → giữa (Tâm) → phải (Trí).','Không cần câu hỏi — đọc như một lần trò chuyện với chính mình.','Để ý tầng nào "nặng" hơn — đó là chỗ đang cần được quan tâm.']},
+  {id:'self',ic:'🪞',name:'3 lá · Hiểu mình',title:'Hiểu chính mình',
+   purpose:'Trải bài tự khám phá: bạn đang là ai, đang đi hướng nào và có thể trở thành phiên bản nào. Hợp để suy ngẫm và viết nhật ký.',
+   aspectByPos:['self','purpose','spiritual'],
+   pos:[['Bạn hiện tại','Con người & tâm thế của bạn lúc này.'],['Con đường hiện tại','Hướng bạn đang đi và điều nó đang dẫn tới.'],['Tiềm năng','Điều bạn có thể vươn tới — phiên bản trọn vẹn hơn của mình.']],
+   tips:['Không phải lời tiên đoán — đọc như tấm gương soi lòng mình.','Ghi cảm nhận vào Nhật ký để thấy mình đổi thay theo thời gian.']},
+  {id:'decide',ic:'🔀',name:'5 lá · Quyết định',title:'Hai lựa chọn',
+   purpose:'Khi phân vân giữa hai lựa chọn (A hay B): soi động lực, giá trị của bạn và kết quả có thể của mỗi hướng trước khi quyết.',
+   pos:[['Động lực của bạn','Điều thôi thúc bạn tiến tới, và nó ảnh hưởng thế nào đến quyết định này.'],['Kết quả mong muốn','Điều bạn thật lòng mong xảy ra, tận sâu bên trong.'],['Giá trị của bạn','Nguyên tắc & điều bạn coi trọng — nên định hướng lựa chọn ra sao.'],['Lựa chọn 1','Kết quả có thể xảy ra nếu bạn chọn hướng thứ nhất.'],['Lựa chọn 2','Kết quả có thể xảy ra nếu bạn chọn hướng thứ hai.']],
+   tips:['3 lá đầu nói về CHÍNH BẠN (động lực, mong muốn, giá trị); 2 lá cuối chiếu về từng lựa chọn.','Bài chỉ làm rõ để bạn thấy đường — quyết định cuối vẫn là của bạn.','So lá 4 với lá 5: hướng nào hợp với giá trị (lá 3) của bạn hơn?']},
+  {id:'career',ic:'💼',name:'5 lá · Sự nghiệp',title:'Trải bài Sự nghiệp',
+   purpose:'Định hướng nghề nghiệp: làm rõ công việc mong muốn, cách đạt tới, thế mạnh của bạn, người trợ giúp và điều đang bị bỏ sót.',
+   aspectByPos:['career','career_change','talent','colleague','burnout'],
+   pos:[['Công việc mơ ước','Vai trò bạn khao khát, đặc điểm của nó & điều bạn sẽ nhận được.'],['Con đường tới đó','Những lối đi & bước cần làm để đạt mục tiêu.'],['Thế mạnh của bạn','Năng lực, tài năng bạn đã sẵn có để tiến tới.'],['Người/nguồn trợ giúp','Ai có thể giúp bạn, mạng lưới & nguồn lực đang mở ra.'],['Điều đang bỏ quên','Điều bạn đang lơ là hoặc cần để tâm để thành công.']],
+   tips:['Lá 2 (con đường) nối với lá 5 (điều bỏ quên): bước đi có đang né tránh điều gì?','Lá 3 là "vốn" bạn đang có — tận dụng nó cho lá 2.']},
+  {id:'cross5',ic:'➕',name:'5 lá · Chữ Thập',title:'Chữ Thập 5 lá',
+   purpose:'Bản rút gọn của Celtic — nhìn một vấn đề từ 5 phía. Bước đệm lý tưởng giữa trải 3 lá và Celtic 10 lá; hợp mọi chủ đề.',
+   pos:[['Hiện tại','Cốt lõi vấn đề & tình thế/tâm trạng của bạn lúc này.'],['Quá khứ','Sự việc, lựa chọn trong quá khứ đã dẫn tới hiện tại.'],['Tương lai gần','Hướng đi sắp tới nếu mọi thứ tiếp tục như hiện tại.'],['Nền tảng & điều ẩn','Gốc rễ, niềm tin trong tiềm thức hay ảnh hưởng ngầm chi phối sự việc.'],['Lời khuyên & tiềm năng','Góc nhìn từ trên cao: kết quả tốt đẹp nhất hoặc hành động nên làm.']],
+   tips:['Đọc lá 1 (hiện tại) làm tâm, rồi vòng ra: quá khứ → tương lai → nền tảng → lời khuyên.','Lá 4 (điều ẩn) thường giải thích vì sao đang bế tắc; lá 5 là lối ra.']},
+  {id:'year',ic:'🗓️',name:'4 lá · Cả năm',title:'Bốn mùa trong năm',
+   purpose:'Nhìn tổng thể cả năm qua 4 quý/mùa — hợp làm dịp đầu năm hay sinh nhật. Bản nhẹ của trải "12 tháng".',
+   pos:[['Quý I · Gieo hạt','Tháng 1–3: nghỉ ngơi, suy ngẫm & đặt nền cho năm mới.'],['Quý II · Nảy mầm','Tháng 4–6: tăng trưởng, khởi đầu mới, điều bắt đầu đơm bông.'],['Quý III · Rực rỡ','Tháng 7–9: đỉnh cao, thể hiện & gặt hái sung túc.'],['Quý IV · Thu hoạch','Tháng 10–12: gặt quả, buông bỏ & khép lại chu kỳ.']],
+   tips:['Mỗi lá là năng lượng chủ đạo của một quý — đọc như một dòng chảy nối tiếp.','Muốn sâu hơn, rút thêm 1 lá "chủ đề cả năm" đặt ở giữa.']},
 ];
 let curSpread='ppf', draws=[];
 function curSp(){ return SPREADS.find(s=>s.id===curSpread); }
 /* độ khó gợi ý cho người mới */
-const SPREAD_LVL={ one:{txt:'Dễ',cls:'de'}, ppf:{txt:'Dễ',cls:'de'}, yesno:{txt:'Vừa',cls:'vua'}, sao:{txt:'Vừa',cls:'vua'}, horse:{txt:'Sâu',cls:'sau'}, love:{txt:'Sâu',cls:'sau'}, celtic:{txt:'Sâu',cls:'sau'} };
+const LVL_DE={txt:'Dễ',cls:'de'}, LVL_VUA={txt:'Vừa',cls:'vua'}, LVL_SAU={txt:'Sâu',cls:'sau'};
+const SPREAD_LVL={ one:LVL_DE, ppf:LVL_DE, mbs:LVL_DE, self:LVL_DE, sao:LVL_VUA, yesno:LVL_VUA, decide:LVL_VUA, career:LVL_VUA, cross5:LVL_VUA, year:LVL_VUA, horse:LVL_SAU, love:LVL_SAU, celtic:LVL_SAU };
+/* nhóm kiểu trải cho bộ chọn — theo mục đích, dẫn người mới */
+const SPREAD_GROUPS=[
+  {key:'start', label:'🌱 Nhanh & dễ',   ids:['one','ppf','sao','mbs']},
+  {key:'topic', label:'💗 Theo chủ đề',  ids:['love','career','decide','yesno','self']},
+  {key:'deep',  label:'🔮 Chuyên sâu',    ids:['cross5','horse','year','celtic']},
+];
 /* hiện/ẩn phần AI + Nhật ký theo bước (chỉ hiện sau khi có trải bài;
    Nhật ký vẫn hiện sẵn nếu đã có mục cũ để xem lại). */
 function revealAfterDraw(on){
@@ -2691,7 +2735,13 @@ document.querySelectorAll('#seg-topic button').forEach(b=>b.onclick=()=>{
   renderTopic();
 });
 // trải bài
-document.getElementById('seg-spread').innerHTML=SPREADS.map(s=>`<button data-sp="${s.id}"${s.id===curSpread?' class="is-on"':''}>${s.ic} ${s.name}</button>`).join('');
+document.getElementById('seg-spread').innerHTML=SPREAD_GROUPS.map(g=>{
+  const chips=g.ids.map(id=>{ const s=SPREADS.find(x=>x.id===id); if(!s) return '';
+    const lvl=SPREAD_LVL[id];
+    return `<button class="sp-chip${id===curSpread?' is-on':''}" data-sp="${id}">${s.ic} ${s.name}${lvl?`<span class="sp-chip__lvl sp-chip__lvl--${lvl.cls}">${lvl.txt}</span>`:''}</button>`;
+  }).join('');
+  return `<div class="sp-grp"><div class="sp-grp__label">${g.label}</div><div class="sp-grp__chips">${chips}</div></div>`;
+}).join('');
 document.querySelectorAll('#seg-spread button').forEach(b=>b.onclick=()=>{ curSpread=b.dataset.sp; clearSpread(); renderSpreadGuide(); });
 document.getElementById('drawN').onclick=drawSpread;
 document.getElementById('resetN').onclick=clearSpread;
